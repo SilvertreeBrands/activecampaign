@@ -6,23 +6,28 @@ namespace ActiveCampaign\Gateway;
 class Client
 {
     public const API_VERSION = '/api/3/';
-    public const HTTP_VERSION = '1.1';
-    public const CONTENT_TYPE = 'application/json';
+    public const HEADER_CONTENT_TYPE = 'application/json';
+    public const HEADER_ACCEPT = 'application/json; charset=UTF-8';
+
+    public const METHOD_POST = 'POST';
+    public const METHOD_PUT = 'PUT';
+    public const METHOD_GET = 'GET';
+    public const METHOD_DELETE = 'DELETE';
 
     /**
      * @var bool
      */
-    private $debug = false;
+    private $debug;
 
     /**
      * @var string
      */
-    private $apiKey = '';
+    private $apiKey;
 
     /**
      * @var string
      */
-    private $apiUrl = '';
+    private $apiUrl;
 
     /**
      * @var \Psr\Log\LoggerInterface
@@ -33,6 +38,11 @@ class Client
      * @var \GuzzleHttp\ClientInterface
      */
     private $client;
+
+    /**
+     * @var \ActiveCampaign\Gateway\Response
+     */
+    private $response;
 
     /**
      * Construct
@@ -63,15 +73,15 @@ class Client
      * @param string $action
      * @param string $method
      * @param array $payload
-     * @param array $expectedResponseStatuses
+     * @param array $successCodes
      *
-     * @return void
+     * @return \ActiveCampaign\Gateway\Response
      */
-    public function request(
+    protected function request(
         string $action,
         string $method,
         array $payload = [],
-        array $expectedResponseStatuses = []
+        array $successCodes = []
     ) {
         try {
             if (!$this->apiKey) {
@@ -86,22 +96,31 @@ class Client
 
             $options = [
                 \GuzzleHttp\RequestOptions::HEADERS => [
-                    'Content-Type'  => self::CONTENT_TYPE,
+                    'Content-Type'  => self::HEADER_CONTENT_TYPE,
+                    'Accept'        => self::HEADER_ACCEPT,
                     'Api-Token'     => $this->apiKey
                 ]
             ];
 
-            $this->debug('Request', [
+            if (!empty($payload)) {
+                $options[\GuzzleHttp\RequestOptions::JSON] = $payload;
+            }
+
+            $this->debug('Prepare request', [
                 'METHOD'    => $method,
                 'URL'       => $url,
-                'OPTIONS'   => $options
+                'HEADERS'   => $options[\GuzzleHttp\RequestOptions::HEADERS],
+                'PAYLOAD'   => $options[\GuzzleHttp\RequestOptions::JSON] ?? []
             ]);
 
-            //$result = $this->client->request($method, $url, $options);
-
+            // Perform request
+            $response = $this->client->request($method, $url, $options);
         } catch (\Exception $e) {
             $this->logger->critical($e);
+            $response = $e;
         }
+
+        return new \ActiveCampaign\Gateway\Response($response, $successCodes);
     }
 
     /**

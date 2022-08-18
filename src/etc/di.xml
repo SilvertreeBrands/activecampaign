@@ -20,4 +20,12 @@
             </argument>
         </arguments>
     </type>
+    <type name="ActiveCampaign\Api\Contacts">
+        <arguments>
+            <argument name="apiKey" xsi:type="string">1234</argument>
+            <argument name="apiUrl" xsi:type="string">test</argument>
+            <argument name="logger" xsi:type="string">ActiveCampaign\Integration\Logger\Logger</argument>
+            <argument name="debug" xsi:type="bool">true</argument>
+        </arguments>
+    </type>
 </config>
