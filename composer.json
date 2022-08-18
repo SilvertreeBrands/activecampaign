@@ -22,6 +22,7 @@
     },
     "autoload": {
         "files": [
+            "src/registration.php",
             "Core/registration.php",
             "Customer/registration.php",
             "AbandonedCart/registration.php",
@@ -29,12 +30,13 @@
             "SyncLog/registration.php"
         ],
         "psr-4": {
+            "ActiveCampaign\\Integration": "src",
+            "ActiveCampaign\\Gateway\\": "lib/ActiveCampaign/Gateway",
             "ActiveCampaign\\Core\\": "Core",
             "ActiveCampaign\\Customer\\": "Customer",
             "ActiveCampaign\\AbandonedCart\\": "AbandonedCart",
             "ActiveCampaign\\Order\\": "Order",
-            "ActiveCampaign\\SyncLog\\": "SyncLog",
-            "ActiveCampaign\\Gateway\\": "lib/ActiveCampaign/Gateway"
+            "ActiveCampaign\\SyncLog\\": "SyncLog"
         }
     },
     "minimum-stability": "dev",
