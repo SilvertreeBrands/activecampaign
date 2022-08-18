@@ -30,7 +30,7 @@
             "SyncLog/registration.php"
         ],
         "psr-4": {
-            "ActiveCampaign\\Integration": "src",
+            "ActiveCampaign\\Integration\\": "src",
             "ActiveCampaign\\Gateway\\": "lib/ActiveCampaign/Gateway",
             "ActiveCampaign\\Core\\": "Core",
             "ActiveCampaign\\Customer\\": "Customer",
