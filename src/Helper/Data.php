@@ -5,7 +5,7 @@ namespace ActiveCampaign\Integration\Helper;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    private const MODULE_CONFIG_PATH = 'active_campaign/general';
+    protected const MODULE_CONFIG_PATH = 'active_campaign/general';
 
     /**
      * @var \Magento\Framework\ObjectManagerInterface

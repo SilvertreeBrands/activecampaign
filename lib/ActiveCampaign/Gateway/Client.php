@@ -15,9 +15,14 @@ class Client
     public const METHOD_DELETE = 'DELETE';
 
     /**
-     * @var bool
+     * @var \Psr\Log\LoggerInterface
      */
-    private $debug;
+    private $logger;
+
+    /**
+     * @var \GuzzleHttp\ClientInterface
+     */
+    private $client;
 
     /**
      * @var string
@@ -30,41 +35,43 @@ class Client
     private $apiUrl;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var bool
      */
-    private $logger;
-
-    /**
-     * @var \GuzzleHttp\ClientInterface
-     */
-    private $client;
-
-    /**
-     * @var \ActiveCampaign\Gateway\Response
-     */
-    private $response;
+    private $debug;
 
     /**
      * Construct
      *
-     * @param string $apiKey
-     * @param string $apiUrl
      * @param \Psr\Log\LoggerInterface $logger
-     * @param bool $debug
      * @param \GuzzleHttp\ClientInterface|null $client
      */
     public function __construct(
+        \Psr\Log\LoggerInterface $logger,
+        \GuzzleHttp\ClientInterface $client = null
+    ) {
+        $this->logger = $logger;
+        $this->client = $client ?: new \GuzzleHttp\Client();
+    }
+
+    /**
+     * Set config
+     *
+     * @param string $apiKey
+     * @param string $apiUrl
+     * @param bool $debug
+     *
+     * @return Client
+     */
+    public function setConfig(
         string $apiKey,
         string $apiUrl,
-        \Psr\Log\LoggerInterface $logger,
-        bool $debug = false,
-        \GuzzleHttp\ClientInterface $client = null
+        bool $debug = false
     ) {
         $this->apiKey = $apiKey;
         $this->apiUrl = $apiUrl;
-        $this->logger = $logger;
         $this->debug = $debug;
-        $this->client = $client ?: new \GuzzleHttp\Client();
+
+        return $this;
     }
 
     /**
@@ -114,13 +121,20 @@ class Client
             ]);
 
             // Perform request
-            $response = $this->client->request($method, $url, $options);
+            $rawResponse = $this->client->request($method, $url, $options);
         } catch (\Exception $e) {
             $this->logger->critical($e);
-            $response = $e;
+            $rawResponse = $e;
+        } catch (\GuzzleHttp\Exception\GuzzleException $ge) {
+            $this->logger->critical($ge);
+            $rawResponse = $ge;
         }
 
-        return new \ActiveCampaign\Gateway\Response($response, $successCodes);
+        $response = new \ActiveCampaign\Gateway\Response($rawResponse, $successCodes);
+
+        $this->debug('Response result', $response->result);
+
+        return $response;
     }
 
     /**

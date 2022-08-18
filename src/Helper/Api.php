@@ -85,21 +85,4 @@ class Api extends \ActiveCampaign\Integration\Helper\Data
             $store
         );
     }
-
-    /**
-     * Get gateway client
-     *
-     * @param \Magento\Store\Api\Data\StoreInterface|int|string|null $store
-     *
-     * @return \ActiveCampaign\Gateway\Client
-     */
-    public function getGatewayClient(\Magento\Store\Api\Data\StoreInterface|int|string $store = null)
-    {
-        return new \ActiveCampaign\Gateway\Client(
-            $this->getApiKey($store),
-            $this->getApiUrl($store),
-            $this->logger,
-            $this->isDebugActive($store)
-        );
-    }
 }
