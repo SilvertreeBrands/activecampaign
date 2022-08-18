@@ -11,9 +11,7 @@
         }
     ],
     "require": {
-        "php": "~7.3.0||~7.4.0||~8.0",
-        "magento/framework": "*",
-        "magento/magento-composer-installer": "*"
+        "php": "~7.3.0||~7.4.0||~8.0"
     },
     "replace": {
         "activecampaign/core": "self.version",
@@ -35,9 +33,16 @@
             "ActiveCampaign\\Customer\\": "Customer",
             "ActiveCampaign\\AbandonedCart\\": "AbandonedCart",
             "ActiveCampaign\\Order\\": "Order",
-            "ActiveCampaign\\SyncLog\\": "SyncLog"
+            "ActiveCampaign\\SyncLog\\": "SyncLog",
+            "ActiveCampaign\\Gateway\\": "lib/ActiveCampaign/Gateway"
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "magento/composer-dependency-version-audit-plugin": true,
+            "magento/magento-composer-installer": true
+        }
+    }
 }
