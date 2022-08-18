@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ActiveCampaign\Logger;
+namespace ActiveCampaign\Integration\Logger;
 
 class Logger extends \Monolog\Logger
 {
