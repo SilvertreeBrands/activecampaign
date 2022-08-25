@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="activecampaign" translate="label" sortOrder="10000">
+            <label>ActiveCampaign</label>
+        </tab>
+        <section id="activecampaign_integration" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Configuration</label>
+            <tab>activecampaign</tab>
+            <class>separator-top</class>
+            <resource>ActiveCampaign_Integration::activecampaign_config</resource>
+            <include path="ActiveCampaign_Integration::system/general.xml"/>
+            <include path="ActiveCampaign_Integration::system/customer.xml"/>
+            <include path="ActiveCampaign_Integration::system/order.xml"/>
+            <include path="ActiveCampaign_Integration::system/abandoned_cart.xml"/>
+        </section>
+    </system>
+</config>

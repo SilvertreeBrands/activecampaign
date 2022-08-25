@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <activecampaign_integration>
+            <customer>
+                <active>0</active>
+                <sync_batch_size>100</sync_batch_size>
+                <cron>10 * * * *</cron>
+            </customer>
+            <order>
+                <active>0</active>
+                <sync_batch_size>100</sync_batch_size>
+                <cron>5 * * * *</cron>
+            </order>
+            <abandoned_cart>
+                <active>0</active>
+                <sync_batch_size>100</sync_batch_size>
+                <cron>0 * * * *</cron>
+            </abandoned_cart>
+        </activecampaign_integration>
+    </default>
+</config>

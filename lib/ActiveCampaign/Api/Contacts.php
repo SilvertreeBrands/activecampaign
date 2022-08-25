@@ -17,6 +17,7 @@ class Contacts extends \ActiveCampaign\Gateway\Client
      * @param array $fieldValues
      *
      * @return \ActiveCampaign\Gateway\Response
+     * @throws \ActiveCampaign\Gateway\ResultException
      */
     public function sync(
         string $email,

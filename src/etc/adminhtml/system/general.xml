@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>General</label>
+
+        <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Enable</label>
+            <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+        </field>
+
+        <field id="debug" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Debug Logging</label>
+            <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+        </field>
+
+        <field id="connection_notice" type="note" sortOrder="30" showInDefault="1">
+            <label/>
+            <frontend_model>ActiveCampaign\Integration\Block\Adminhtml\System\Config\ConnectionNotice</frontend_model>
+        </field>
+
+        <field id="connection_name" translate="label comment" type="text" sortOrder="40" showInStore="1">
+            <label>API Connection Name</label>
+            <validate>required-entry validate-no-html-tags</validate>
+            <comment>Example: Magento2 - Your Store Name</comment>
+        </field>
+
+        <field id="api_url" translate="label comment" type="text" sortOrder="50" showInStore="1">
+            <label>API URL</label>
+            <validate>required-entry validate-url validate-no-html-tags</validate>
+            <comment>Example: https://youraccountname.api-us1.com</comment>
+        </field>
+
+        <field id="api_key" translate="label" type="text" sortOrder="60" showInStore="1">
+            <label>API Key</label>
+            <validate>required-entry</validate>
+        </field>
+
+        <field id="connect_active_campaign" translate="button_label" sortOrder="70" showInStore="1">
+            <label/>
+            <button_label>Connect</button_label>
+            <frontend_model>ActiveCampaign\Integration\Block\Adminhtml\System\Config\Connection</frontend_model>
+            <depends>
+                <field id="activecampaign_integration/general/active">1</field>
+            </depends>
+        </field>
+    </group>
+</include>

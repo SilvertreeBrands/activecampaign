@@ -23,7 +23,6 @@
     "autoload": {
         "files": [
             "src/registration.php",
-            "Core/registration.php",
             "Customer/registration.php",
             "AbandonedCart/registration.php",
             "Order/registration.php",
@@ -33,7 +32,6 @@
             "ActiveCampaign\\Integration\\": "src",
             "ActiveCampaign\\Gateway\\": "lib/ActiveCampaign/Gateway",
             "ActiveCampaign\\Api\\": "lib/ActiveCampaign/Api",
-            "ActiveCampaign\\Core\\": "Core",
             "ActiveCampaign\\Customer\\": "Customer",
             "ActiveCampaign\\AbandonedCart\\": "AbandonedCart",
             "ActiveCampaign\\Order\\": "Order",

@@ -83,7 +83,7 @@ class MassSync extends AbstractMassAction implements HttpPostActionInterface
 
                     unset($contactData['contact']['isEcomCustomer']);
 
-                    $contactResult = $this->curl->createContacts(
+                    $contactResult = $this->curl->genericRequest(
                         self::METHOD,
                         self::CONTACT_ENDPOINT,
                         $contactData
@@ -93,7 +93,7 @@ class MassSync extends AbstractMassAction implements HttpPostActionInterface
 
                     if ($contactResult['success'] && !$isEcomCustomer) {
                         $ecomCustomerData = $this->customer->getEcomCustomerData($customerId);
-                        $ecomCustomerResult = $this->curl->createContacts(
+                        $ecomCustomerResult = $this->curl->genericRequest(
                             self::METHOD,
                             self::ECOM_CUSTOMER_ENDPOINT,
                             $ecomCustomerData

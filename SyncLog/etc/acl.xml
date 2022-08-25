@@ -7,7 +7,7 @@
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="ActiveCampaign_Core::config_active_campaign">
+                            <resource id="ActiveCampaign_Integration::activecampaign_config">
                                 <resource id="ActiveCampaign_SyncLog::config_activecampaign_synclog"
                                           title="Delete SyncLog"/>
                             </resource>

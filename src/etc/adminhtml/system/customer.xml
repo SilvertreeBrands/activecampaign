@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="customer" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Customer</label>
+
+        <field id="active" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Enable Syncing</label>
+            <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+        </field>
+
+        <field id="sync_batch_size" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Sync Batch Size</label>
+            <validate>required-entry validate-number validate-greater-than-zero validate-integer</validate>
+            <comment><![CDATA[This value represents the maximum number of customers that will be synced in each cron run.]]></comment>
+            <depends>
+                <field id="activecampaign_integration/customer/active">1</field>
+            </depends>
+        </field>
+
+        <field id="cron" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Cron Schedule</label>
+            <comment><![CDATA[See <a target="_blank" href="https://crontab.guru/">https://crontab.guru</a> for help.]]></comment>
+            <backend_model>ActiveCampaign\Integration\Model\Config\Cron\Customer</backend_model>
+            <depends>
+                <field id="activecampaign_integration/customer/active">1</field>
+            </depends>
+        </field>
+
+        <!--<field id="customer_sync_status" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label/>
+            <frontend_model>ActiveCampaign\Integration\Block\Adminhtml\System\Config\Widget</frontend_model>
+            <depends>
+                <field id="activecampaign_integration/customer/active">1</field>
+            </depends>
+        </field>-->
+    </group>
+</include>

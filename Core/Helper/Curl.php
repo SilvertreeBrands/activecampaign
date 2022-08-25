@@ -20,11 +20,6 @@ class Curl extends \Magento\Framework\App\Helper\AbstractHelper
     private $jsonHelper;
 
     /**
-     * @var \ActiveCampaign\Core\Logger\Logger
-     */
-    private $logger;
-
-    /**
      * @var \ActiveCampaign\Core\Helper\Data
      */
     private $activeCampaignHelper;
@@ -39,7 +34,6 @@ class Curl extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Framework\Serialize\Serializer\Json $jsonHelper
-     * @param \ActiveCampaign\Core\Logger\Logger $logger
      * @param \ActiveCampaign\Core\Helper\Data $activeCampaignHelper
      * @param \ActiveCampaign\SyncLog\Model\SyncLog $syncLog
      * @param \GuzzleHttp\ClientInterface|null $client
@@ -47,14 +41,12 @@ class Curl extends \Magento\Framework\App\Helper\AbstractHelper
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\Serialize\Serializer\Json $jsonHelper,
-        \ActiveCampaign\Core\Logger\Logger $logger,
         \ActiveCampaign\Core\Helper\Data $activeCampaignHelper,
         \ActiveCampaign\SyncLog\Model\SyncLog $syncLog,
         \GuzzleHttp\ClientInterface $client = null
     ) {
         $this->client = $client ?: new \GuzzleHttp\Client();
         $this->jsonHelper = $jsonHelper;
-        $this->logger = $logger;
         $this->activeCampaignHelper = $activeCampaignHelper;
         $this->syncLog = $syncLog;
 
@@ -92,7 +84,7 @@ class Curl extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Send order data
+     * Generic request
      *
      * @param string $method
      * @param string $urlEndpoint
@@ -101,32 +93,7 @@ class Curl extends \Magento\Framework\App\Helper\AbstractHelper
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function orderDataSend(
-        string $method,
-        string $urlEndpoint,
-        array $data = []
-    ): array {
-        $apiUrl = $this->activeCampaignHelper->getApiUrl();
-        $apiKey = $this->activeCampaignHelper->getApiKey();
-
-        $url = $apiUrl . self::API_VERSION . $urlEndpoint;
-        $bodyData = (!empty($data)) ? $this->jsonHelper->serialize($data) : '';
-        $headers = $this->getHeaders($apiKey);
-
-        return $this->sendRequest($urlEndpoint, $method, $url, $headers, $bodyData);
-    }
-
-    /**
-     * Update order data
-     *
-     * @param string $method
-     * @param string $urlEndpoint
-     * @param array $data
-     *
-     * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function orderDataUpdate(
+    public function genericRequest(
         string $method,
         string $urlEndpoint,
         array $data = []
@@ -185,31 +152,6 @@ class Curl extends \Magento\Framework\App\Helper\AbstractHelper
         $headers = $this->getHeaders($apiKey);
 
         return $this->sendRequest($urlEndpoint, $method, $url, $headers);
-    }
-
-    /**
-     * Create contacts
-     *
-     * @param string $method
-     * @param string $urlEndpoint
-     * @param array $data
-     *
-     * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function createContacts(
-        string $method,
-        string $urlEndpoint,
-        array $data = []
-    ): array {
-        $apiUrl = $this->activeCampaignHelper->getApiUrl();
-        $apiKey = $this->activeCampaignHelper->getApiKey();
-
-        $url = $apiUrl . self::API_VERSION . $urlEndpoint;
-        $bodyData = (!empty($data)) ? $this->jsonHelper->serialize($data) : '';
-        $headers = $this->getHeaders($apiKey);
-
-        return $this->sendRequest($urlEndpoint, $method, $url, $headers, $bodyData);
     }
 
     /**

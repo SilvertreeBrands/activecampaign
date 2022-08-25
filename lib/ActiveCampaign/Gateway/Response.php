@@ -21,19 +21,9 @@ class Response
     public $status;
 
     /**
-     * @var bool
+     * @var array
      */
-    public $success = false;
-
-    /**
-     * @var string|null
-     */
-    public $message;
-
-    /**
-     * @var mixed|array|string|int|null
-     */
-    public $result;
+    public $result = [];
 
     /**
      * @var string
@@ -45,6 +35,8 @@ class Response
      *
      * @param \Psr\Http\Message\ResponseInterface|\Exception $response
      * @param array $successCodes
+     *
+     * @throws \ActiveCampaign\Gateway\ResultException
      */
     public function __construct(
         \Psr\Http\Message\ResponseInterface|\Exception $response,
@@ -59,9 +51,12 @@ class Response
      * Parse response
      *
      * @return void
+     * @throws \ActiveCampaign\Gateway\ResultException
      */
     private function parseResponse()
     {
+        $success = false;
+
         try {
             if ($this->response instanceof \Psr\Http\Message\ResponseInterface) {
                 $this->status = $this->response->getStatusCode();
@@ -69,18 +64,15 @@ class Response
                 $this->result = $this->unserialize($this->rawResult);
 
                 if (in_array($this->response->getStatusCode(), $this->successCodes)) {
-                    $this->success = true;
-                } else {
-                    $this->success = false;
+                    $success = true;
                 }
             }
-
-            if (!$this->success) {
-                $this->message = $this->getMessage();
-            }
         } catch (\Exception $e) {
-            $this->success = false;
-            $this->message = $e->getMessage();
+            throw new \ActiveCampaign\Gateway\ResultException($e->getMessage());
+        }
+
+        if (!$success) {
+            throw new \ActiveCampaign\Gateway\ResultException($this->getMessage());
         }
     }
 
@@ -89,7 +81,7 @@ class Response
      *
      * @param string|null $string
      *
-     * @return string|int|float|bool|array|null
+     * @return array
      */
     private function unserialize(?string $string)
     {
@@ -103,6 +95,10 @@ class Response
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
+        }
+
+        if (!is_array($result)) {
+            $result = [$result];
         }
 
         return $result;
@@ -129,6 +125,12 @@ class Response
             }
         }
 
-        return 'An unknown error occurred. Please try again later';
+        $additional = '';
+
+        if ($this->status) {
+            $additional = sprintf(' (Status code: %s)', $this->status);
+        }
+
+        return sprintf('An unknown error occurred.%s', $additional);
     }
 }

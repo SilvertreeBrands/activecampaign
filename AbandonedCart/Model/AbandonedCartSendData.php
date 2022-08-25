@@ -478,7 +478,7 @@ class AbandonedCartSendData extends AbstractModel
         $contactData['contact'] = $contact;
 
         try {
-            $contactResult = $this->curl->createContacts(self::METHOD, self::CONTACT_ENDPOINT, $contactData);
+            $contactResult = $this->curl->genericRequest(self::METHOD, self::CONTACT_ENDPOINT, $contactData);
 
             $contactId = $contactResult['data']['contact']['id'] ?? null;
 
@@ -504,7 +504,7 @@ class AbandonedCartSendData extends AbstractModel
                             }
                         }
                         if (!$ecomCustomerId) {
-                            $ecomCustomerResult = $this->curl->createContacts(
+                            $ecomCustomerResult = $this->curl->genericRequest(
                                 self::METHOD,
                                 self::ECOM_CUSTOMER_ENDPOINT,
                                 $ecomCustomerData
@@ -524,7 +524,7 @@ class AbandonedCartSendData extends AbstractModel
                         'externals' =>$quote->getBillingAddress()->getEmail(),
                         'email'=>$quote->getBillingAddress()->getEmail(),
                 ]];
-                $ecomCustomerResult = $this->curl->createContacts(
+                $ecomCustomerResult = $this->curl->genericRequest(
                     self::METHOD,
                     self::ECOM_CUSTOMER_ENDPOINT,
                     $ecomCustomerData

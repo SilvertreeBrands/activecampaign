@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="customer_entity">
+        <column xsi:type="int" name="ac_contact_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Contact ID"/>
+        <column xsi:type="int" name="ac_customer_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Customer ID"/>
+        <column xsi:type="smallint" name="ac_sync_status" nullable="false" unsigned="true" identity="false" default="0" comment="ActiveCampaign Sync Status"/>
+    </table>
+    <table name="quote">
+        <column xsi:type="int" name="ac_sync_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Sync ID"/>
+        <column xsi:type="smallint" name="ac_sync_status" nullable="false" unsigned="true" identity="false" default="0" comment="ActiveCampaign Sync Status"/>
+    </table>
+    <table name="sales_order">
+        <column xsi:type="int" name="ac_sync_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Sync ID"/>
+        <column xsi:type="smallint" name="ac_sync_status" nullable="false" unsigned="true" identity="false" default="0" comment="ActiveCampaign Sync Status"/>
+    </table>
+    <table name="sales_order_grid">
+        <column xsi:type="int" name="ac_sync_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Sync ID"/>
+        <column xsi:type="smallint" name="ac_sync_status" nullable="false" unsigned="true" identity="false" default="0" comment="ActiveCampaign Sync Status"/>
+    </table>
+</schema>

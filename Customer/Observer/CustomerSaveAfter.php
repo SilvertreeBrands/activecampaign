@@ -71,13 +71,13 @@ class CustomerSaveAfter implements ObserverInterface
 
             unset($contactData['contact']['isEcomCustomer']);
 
-            $contactResult = $this->curl->createContacts(self::METHOD, self::CONTACT_ENDPOINT, $contactData);
+            $contactResult = $this->curl->genericRequest(self::METHOD, self::CONTACT_ENDPOINT, $contactData);
             $contactId = isset($contactResult['data']['contact']['id']) ? $contactResult['data']['contact']['id'] : null;
             $syncStatus = ($contactResult['success']) ? CronConfig::SYNCED : CronConfig::FAIL_SYNCED;
 
             if ($contactResult['success'] && !$isEcomCustomer) {
                 $ecomCustomerData = $this->customer->getEcomCustomerData($customerId);
-                $ecomCustomerResult = $this->curl->createContacts(
+                $ecomCustomerResult = $this->curl->genericRequest(
                     self::METHOD,
                     self::ECOM_CUSTOMER_ENDPOINT,
                     $ecomCustomerData

@@ -21,120 +21,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $configInterface;
 
     /**
-     * @var \Magento\Theme\Block\Html\Header\Logo
-     */
-    private $logo;
-
-    /**
      * Construct
      *
      * @param \Magento\Store\Api\StoreRepositoryInterface $storeRepository
      * @param \Magento\Framework\App\Config\ConfigResource\ConfigInterface $configInterface
      * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Theme\Block\Html\Header\Logo $logo
      */
     public function __construct(
         \Magento\Store\Api\StoreRepositoryInterface $storeRepository,
         \Magento\Framework\App\Config\ConfigResource\ConfigInterface $configInterface,
-        \Magento\Framework\App\Helper\Context $context,
-        \Magento\Theme\Block\Html\Header\Logo $logo
+        \Magento\Framework\App\Helper\Context $context
     ) {
         parent::__construct($context);
         $this->storeRepository = $storeRepository;
         $this->configInterface = $configInterface;
-        $this->logo = $logo;
     }
 
-    /**
-     * Is enabled
-     *
-     * @param int|string|null $scopeCode
-     *
-     * @return bool
-     */
-    public function isEnabled(int|string $scopeCode = null): bool
-    {
-        return $this->scopeConfig->isSetFlag(
-            self::ACTIVE_CAMPAIGN_GENERAL_STATUS,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORES,
-            $scopeCode
-        );
-    }
-
-    /**
-     * Get API URL
-     *
-     * @param int|string|null $scopeCode
-     *
-     * @return string|null
-     */
-    public function getApiUrl(int|string $scopeCode = null): ?string
-    {
-        return $this->scopeConfig->getValue(
-            self::ACTIVE_CAMPAIGN_GENERAL_API_URL,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORES,
-            $scopeCode
-        );
-    }
-
-    /**
-     * Get API key
-     *
-     * @param int|string|null $scopeCode
-     *
-     * @return string|null
-     */
-    public function getApiKey(int|string $scopeCode = null): ?string
-    {
-        return $this->scopeConfig->getValue(
-            self::ACTIVE_CAMPAIGN_GENERAL_API_KEY,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORES,
-            $scopeCode
-        );
-    }
-
-    /**
-     * Get connection ID
-     *
-     * @param int|string|null $scopeCode
-     *
-     * @return string|null
-     */
-    public function getConnectionId(int|string $scopeCode = null): ?string
-    {
-        return $this->scopeConfig->getValue(
-            self::ACTIVE_CAMPAIGN_GENERAL_CONNECTION_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORES,
-            $scopeCode
-        );
-    }
-
-    /**
-     * Get store logo
-     *
-     * @param int|string|null $scopeCode
-     *
-     * @return string
-     */
-    public function getStoreLogo(int|string $scopeCode = null): string
-    {
-        $folderName = \Magento\Config\Model\Config\Backend\Image\Logo::UPLOAD_DIR;
-        $storeLogoPath = $this->scopeConfig->getValue(
-            'design/header/logo_src',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORES,
-            $scopeCode
-        );
-        $path = $folderName . '/' . $storeLogoPath;
-        $logoUrl = $this->_urlBuilder->getBaseUrl(['_type' => \Magento\Framework\UrlInterface::URL_TYPE_MEDIA]) . $path;
-
-        if ($storeLogoPath !== null) {
-            $url = $logoUrl;
-        } else {
-            $url = $this->logo->getLogoSrc();
-        }
-
-        return $url;
-    }
 
     /**
      * Converts to cents the price amount

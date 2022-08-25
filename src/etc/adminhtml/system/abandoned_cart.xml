@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="abandoned_cart" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Abandoned Cart</label>
+
+        <field id="active" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Enable Syncing</label>
+            <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+        </field>
+
+        <field id="sync_batch_size" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Sync Batch Size</label>
+            <validate>required-entry validate-number validate-greater-than-zero validate-integer</validate>
+            <comment><![CDATA[This value represents the maximum number of abandoned carts that will be synced in each cron run.]]></comment>
+            <depends>
+                <field id="activecampaign_integration/abandoned_cart/active">1</field>
+            </depends>
+        </field>
+
+        <field id="cron" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Cron Schedule</label>
+            <comment><![CDATA[See <a target="_blank" href="https://crontab.guru/">https://crontab.guru</a> for help.]]></comment>
+            <backend_model>ActiveCampaign\Integration\Model\Config\Cron\AbandonedCart</backend_model>
+            <depends>
+                <field id="activecampaign_integration/abandoned_cart/active">1</field>
+            </depends>
+        </field>
+
+        <!--<field id="abandoned_cart_sync_status" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label/>
+            <frontend_model>ActiveCampaign\Integration\Block\Adminhtml\System\Config\Widget</frontend_model>
+            <depends>
+                <field id="activecampaign_integration/abandoned_cart/active">1</field>
+            </depends>
+        </field>-->
+
+        <!-- original -->
+        <!--<field id="ac_abandoned_cart_syncing" translate="label comment" type="button" sortOrder="40" showInDefault="1">
+                    <frontend_model>ActiveCampaign\AbandonedCart\Block\System\Config\SyncAbandonedCartData</frontend_model>
+                    <label>Sync Abandoned Cart Data</label>
+                    <depends>
+                        <field id="active_campaign/abandoned_cart/sync">1</field>
+                    </depends>
+                </field>-->
+    </group>
+</include>

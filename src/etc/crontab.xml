@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="ac_customer_sync" instance="ActiveCampaign\Integration\Cron\SyncCustomer" method="execute">
+            <config_path>crontab/default/jobs/ac_customer_sync/schedule/cron_expr</config_path>
+        </job>
+        <job name="ac_order_sync" instance="ActiveCampaign\Integration\Cron\SyncOrder" method="execute">
+            <config_path>crontab/default/jobs/ac_order_sync/schedule/cron_expr</config_path>
+        </job>
+        <job name="ac_abandoned_cart_sync" instance="ActiveCampaign\Integration\Cron\SyncAbandonedCart" method="execute">
+            <config_path>crontab/default/jobs/ac_abandoned_cart_sync/schedule/cron_expr</config_path>
+        </job>
+    </group>
+</config>

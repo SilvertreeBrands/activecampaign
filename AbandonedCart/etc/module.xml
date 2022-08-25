@@ -11,7 +11,7 @@
             <module name="Magento_Product"/>
             <module name="Magento_Sales"/>
             <module name="Magento_Customer"/>
-            <module name="ActiveCampaign_Core" />
+            <module name="ActiveCampaign_Integration" />
         </sequence>
     </module>
 </config>

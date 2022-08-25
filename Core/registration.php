@@ -1,8 +1,8 @@
 <?php
-use Magento\Framework\Component\ComponentRegistrar;
+declare(strict_types=1);
 
-ComponentRegistrar::register(
-    ComponentRegistrar::MODULE,
+\Magento\Framework\Component\ComponentRegistrar::register(
+    \Magento\Framework\Component\ComponentRegistrar::MODULE,
     'ActiveCampaign_Core',
     __DIR__
 );

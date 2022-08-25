@@ -63,37 +63,42 @@ class Masssync extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAct
 
     protected function massAction(AbstractCollection $collection)
     {
-        $countUpdateOrder = 0;
-        $countAlreadySync = 0;
-        foreach ($collection->getItems() as $order) {
-            if (!$order->getEntityId()) {
-                continue;
-            }
-            $ac_order_sync_status = $order->getData('ac_order_sync_status');
-            if (!$ac_order_sync_status) {
-                $result = $this->orderdataSend->orderDataSend($order);
-                if (array_key_exists('success', $result) && $result['success'] != false) {
-                    $countUpdateOrder++;
+        try {
+            $countUpdateOrder = 0;
+            $countAlreadySync = 0;
+            foreach ($collection->getItems() as $order) {
+                if (!$order->getEntityId()) {
+                    continue;
                 }
-                $quote = $this->quoteRepository->get($order->getQuoteId());
-                if ($quote->getAcOrderSyncId() != 0) {
-                    $this->curl->orderDataDelete(self::DELETE_METHOD, self::URL_ENDPOINT, $quote->getAcOrderSyncId());
+                $ac_order_sync_status = $order->getData('ac_order_sync_status');
+                if (!$ac_order_sync_status) {
+                    $result = $this->orderdataSend->orderDataSend($order);
+                    if (array_key_exists('success', $result) && $result['success'] != false) {
+                        $countUpdateOrder++;
+                    }
+                    $quote = $this->quoteRepository->get($order->getQuoteId());
+                    if ($quote->getAcOrderSyncId() != 0) {
+                        $this->curl->orderDataDelete(self::DELETE_METHOD, self::URL_ENDPOINT, $quote->getAcOrderSyncId());
+                    }
+                } else {
+                    $countAlreadySync++;
                 }
-            } else {
-                $countAlreadySync++;
             }
+            $countNonUpdateOrder = $collection->count() - $countUpdateOrder - $countAlreadySync;
+            if ($countUpdateOrder || $countNonUpdateOrder) {
+                $this->messageManager->addNoticeMessage(__(
+                    'Orders synced: %1 Orders failed: %2',
+                    $countUpdateOrder,
+                    $countNonUpdateOrder
+                ));
+            }
+            if ($countAlreadySync) {
+                $this->messageManager->addNoticeMessage(__('%1 order(s) had already been synced.', $countAlreadySync));
+            }
+        } catch (\Throwable $e) {
+            $this->messageManager->addErrorMessage(__('%1', $e->getMessage()));
         }
-        $countNonUpdateOrder = $collection->count() - $countUpdateOrder - $countAlreadySync;
-        if ($countUpdateOrder || $countNonUpdateOrder) {
-            $this->messageManager->addNoticeMessage(__(
-                'Orders synced: %1 Orders failed: %2',
-                $countUpdateOrder,
-                $countNonUpdateOrder
-            ));
-        }
-        if ($countAlreadySync) {
-            $this->messageManager->addNoticeMessage(__('%1 order(s) had already been synced.', $countAlreadySync));
-        }
+
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setPath($this->getComponentRefererUrl());
         return $resultRedirect;

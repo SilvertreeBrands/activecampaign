@@ -1,0 +1,27 @@
+{
+    "customer_entity": {
+        "column": {
+            "ac_contact_id": true,
+            "ac_customer_id": true,
+            "ac_sync_status": true
+        }
+    },
+    "quote": {
+        "column": {
+            "ac_sync_id": true,
+            "ac_sync_status": true
+        }
+    },
+    "sales_order": {
+        "column": {
+            "ac_sync_id": true,
+            "ac_sync_status": true
+        }
+    },
+    "sales_order_grid": {
+        "column": {
+            "ac_sync_id": true,
+            "ac_sync_status": true
+        }
+    }
+}

@@ -1,0 +1,25 @@
+<?php
+declare(strict_types=1);
+
+/** @var \ActiveCampaign\Integration\Block\Adminhtml\System\Config\ConnectionNotice $block */
+?>
+<p class="note">
+    <strong>
+        <?= $block->escaper->escapeHtmlAttr(__('Switch to a store view scope in order to connect your store to ActiveCampaign.')) ?>
+    </strong>
+</p>
+<p class="note"><span>&nbsp;</span></p>
+<div class="messages">
+    <?php foreach ($block->apiHelper->getConnectedStores() as $key => $store): ?>
+        <div class="message message-notice">
+            <div>
+                <?= $block->escaper->escapeHtml(__($store['name'] . ' :')) ?>
+                <?php if ($store['status']): ?>
+                    <strong style="color: #79a22e;"><?= $block->escaper->escapeHtml(__('Connected')) ?></strong>
+                <?php else: ?>
+                    <strong class="colorRed"><?= $block->escaper->escapeHtml(__('Disconnected')) ?></strong>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>

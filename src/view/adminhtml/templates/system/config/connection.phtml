@@ -1,0 +1,21 @@
+<?php
+declare(strict_types=1);
+
+/** @var \ActiveCampaign\Integration\Block\Adminhtml\System\Config\Connection $block */
+?>
+<button class="scalable" type="button" id="<?= $block->getHtmlId() ?>" data-mage-init='{"Connection":{
+    "connection": "<?= $block->escaper->escapeUrl($block->getConnection()) ?>",
+    "url": "<?= $block->escaper->escapeUrl($block->getAjaxUrl()) ?>",
+    "elementId": "<?= $block->getHtmlId() ?>",
+    "successText": "<?= $block->getSuccessText() ?>",
+    "failedText": "<?= $block->escaper->escapeHtmlAttr(__('Failed! Try again?')) ?>",
+    "fieldMapping": "<?= /* @noEscape */ $block->getFieldMapping() ?>"}, "validation": {}}'>
+    <span id="<?= $block->getHtmlId() ?>_result"><?= $block->escaper->escapeHtml($block->getButtonLabel()) ?></span>
+</button>
+<p class="note">
+    <span><?= $block->escaper->escapeHtmlAttr(__('After successfully connecting, go to the ')) ?>
+        <a href="<?= $block->getCacheUrl() ?>"><?= $block->escaper->escapeHtmlAttr(__('Cache Management ')) ?>
+        </a><?= $block->escaper->escapeHtmlAttr(__('page and refresh the cache.')) ?>
+    </span>
+</p>
+

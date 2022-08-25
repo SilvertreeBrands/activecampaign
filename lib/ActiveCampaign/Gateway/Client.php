@@ -83,6 +83,7 @@ class Client
      * @param array $successCodes
      *
      * @return \ActiveCampaign\Gateway\Response
+     * @throws ResultException
      */
     protected function request(
         string $action,
@@ -141,13 +142,17 @@ class Client
      * Debug
      *
      * @param string $message
-     * @param array $context
+     * @param ?array $context
      *
      * @return void
      */
-    private function debug(string $message, array $context)
+    private function debug(string $message, array $context = null)
     {
         if ($this->logger && $this->debug) {
+            if (is_null($context)) {
+                $context = [];
+            }
+
             $this->logger->debug($message, $context);
         }
     }

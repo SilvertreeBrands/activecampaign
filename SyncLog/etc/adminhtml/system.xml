@@ -2,9 +2,9 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <section id="active_campaign" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1"
+        <section id="activecampaign_integration" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1"
                  translate="label">
-            <tab>active_campaign</tab>
+            <tab>activecampaign</tab>
             <resource>ActiveCampaign_SyncLog::config_activecampaign_synclog</resource>
             <group id="synclog" sortOrder="100" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
                 <label>Sync Log Settings</label>

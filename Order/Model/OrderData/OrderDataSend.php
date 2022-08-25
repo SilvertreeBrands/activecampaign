@@ -1,72 +1,26 @@
 <?php
+declare(strict_types=1);
+
 namespace ActiveCampaign\Order\Model\OrderData;
 
-use ActiveCampaign\Core\Helper\Curl;
-use ActiveCampaign\Core\Helper\Data as ActiveCampaignHelper;
-use ActiveCampaign\Order\Helper\Data as ActiveCampaignOrderHelper;
-use Magento\Catalog\Api\ProductRepositoryInterfaceFactory;
-use Magento\Catalog\Helper\ImageFactory;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
-use Magento\Framework\Data\Collection\AbstractDb;
-use Magento\Framework\Model\Context;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
-use Magento\Store\Api\StoreRepositoryInterface;
-use Magento\Customer\Model\CustomerFactory;
-use Magento\Store\Model\StoreManagerInterface as StoreManagerInterface;
-use Magento\Customer\Model\Customer as CustomerModel;
-use Magento\Customer\Api\AddressRepositoryInterface;
-use Magento\Eav\Model\ResourceModel\Entity\Attribute;
-use ActiveCampaign\Core\Helper\Data as CoreHelper;
-use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
-use ActiveCampaign\AbandonedCart\Model\Config\CronConfig;
-
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class OrderDataSend extends \Magento\Framework\Model\AbstractModel
 {
-    const URL_ENDPOINT = "ecomOrders";
-    const METHOD = "POST";
-    const UPDATE_METHOD = "PUT";
-    const GET_METHOD = "GET";
-    const AC_SYNC_STATUS = "ac_sync_status";
-    const CONTACT_ENDPOINT = "contact/sync";
-    const ECOM_CUSTOMER_ENDPOINT = "ecomOrders";
-    const ECOM_CUSTOMERLIST_ENDPOINT = "ecomCustomers";
-
-
-    /**
-     * @var ActiveCampaignOrderHelper
-     */
-    private $activeCampaignOrderHelper;
-
-    /**
-     * @var ActiveCampaignHelper
-     */
-    private $activeCampaignHelper;
-
-    /**
-     * @var ConfigInterface
-     */
-    private $configInterface;
-
-    /**
-     * @var StoreRepositoryInterface
-     */
-    private $storeRepository;
-
-    /**
-     * @var Curl
-     */
-    protected $curl;
+    public const URL_ENDPOINT = 'ecomOrders';
+    public const METHOD = 'POST';
+    public const UPDATE_METHOD = 'PUT';
+    public const GET_METHOD = 'GET';
+    public const AC_SYNC_STATUS = 'ac_sync_status';
+    public const CONTACT_ENDPOINT = 'contact/sync';
+    public const ECOM_CUSTOMER_ENDPOINT = 'ecomOrders';
+    public const ECOM_CUSTOMERLIST_ENDPOINT = 'ecomCustomers';
 
     /**
      * @var \Magento\Catalog\Api\ProductRepositoryInterfaceFactory
      */
-    protected $_productRepositoryFactory;
-
-    /**
-     * @var \Magento\Customer\Api\CustomerRepositoryInterface
-     */
-    protected $_customerRepositoryInterface;
+    protected $productRepositoryFactory;
 
     /**
      * @var \Magento\Catalog\Helper\ImageFactory
@@ -74,234 +28,303 @@ class OrderDataSend extends \Magento\Framework\Model\AbstractModel
     protected $imageHelperFactory;
 
     /**
-     * @var CustomerFactory
+     * @var \ActiveCampaign\Order\Helper\Data
+     */
+    private $activeCampaignOrderHelper;
+
+    /**
+     * @var \ActiveCampaign\Core\Helper\Data
+     */
+    private $activeCampaignHelper;
+
+    /**
+     * @var \ActiveCampaign\Core\Helper\Curl
+     */
+    protected $curl;
+
+    /**
+     * @var \Magento\Customer\Api\CustomerRepositoryInterface
+     */
+    protected $customerRepositoryInterface;
+
+    /**
+     * @var \Magento\Customer\Model\CustomerFactory
      */
     protected $customerFactory;
 
     /**
-     * @var StoreManagerInterface
+     * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
 
     /**
-     * @var AddressRepositoryInterface
+     * @var \Magento\Customer\Model\Customer
+     */
+    protected $customerModel;
+
+    /**
+     * @var \Magento\Customer\Api\AddressRepositoryInterface
      */
     protected $addressRepository;
 
     /**
-     * @var Attribute
+     * @var \Magento\Eav\Model\ResourceModel\Entity\Attribute
      */
     protected $eavAttribute;
 
     /**
-     * @var CustomerResource
+     * @var \Magento\Customer\Model\ResourceModel\Customer
      */
     protected $customerResource;
 
     /**
-     * OrderDataSend constructor.
+     * @var \ActiveCampaign\Integration\Helper\Api
+     */
+    private $apiHelper;
+
+    /**
+     * @var \ActiveCampaign\Api\Contacts
+     */
+    private $contacts;
+
+    /**
+     * Construct
+     *
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param \Magento\Catalog\Api\ProductRepositoryInterfaceFactory $productRepositoryFactory
      * @param \Magento\Catalog\Helper\ImageFactory $imageHelperFactory
-     * @param ActiveCampaignOrderHelper $activeCampaignOrderHelper
-     * @param ActiveCampaignHelper $activeCampaignHelper
-     * @param ConfigInterface $configInterface
-     * @param Curl $curl
+     * @param \ActiveCampaign\Order\Helper\Data $activeCampaignOrderHelper
+     * @param \ActiveCampaign\Core\Helper\Data $activeCampaignHelper
+     * @param \ActiveCampaign\Core\Helper\Curl $curl
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepositoryInterface
-     * @param StoreRepositoryInterface $storeRepository
-     * @param CustomerFactory $customerFactory
-     * @param StoreManagerInterface $storeManager
-     * @param CustomerModel $customerModel
-     * @param AddressRepositoryInterface $addressRepository
-     * @param Attribute $eavAttribute
-     * @param CoreHelper $coreHelper
-     * @param CustomerResource $customerResource
+     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Customer\Model\Customer $customerModel
+     * @param \Magento\Customer\Api\AddressRepositoryInterface $addressRepository
+     * @param \Magento\Eav\Model\ResourceModel\Entity\Attribute $eavAttribute
+     * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
+     * @param \ActiveCampaign\Integration\Helper\Api $apiHelper
+     * @param \ActiveCampaign\Api\Contacts $contacts
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param array $data
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
-        Context $context,
+        \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        ProductRepositoryInterfaceFactory $productRepositoryFactory,
-        ImageFactory $imageHelperFactory,
-        ActiveCampaignOrderHelper $activeCampaignOrderHelper,
-        ActiveCampaignHelper $activeCampaignHelper,
-        ConfigInterface $configInterface,
-        Curl $curl,
-        CustomerRepositoryInterface $customerRepositoryInterface,
-        StoreRepositoryInterface $storeRepository,
-        CustomerFactory $customerFactory,
-        StoreManagerInterface $storeManager,
-        CustomerModel $customerModel,
-        AddressRepositoryInterface $addressRepository,
-        Attribute $eavAttribute,
-        CoreHelper $coreHelper,
-        CustomerResource $customerResource,
+        \Magento\Catalog\Api\ProductRepositoryInterfaceFactory $productRepositoryFactory,
+        \Magento\Catalog\Helper\ImageFactory $imageHelperFactory,
+        \ActiveCampaign\Order\Helper\Data $activeCampaignOrderHelper,
+        \ActiveCampaign\Core\Helper\Data $activeCampaignHelper,
+        \ActiveCampaign\Core\Helper\Curl $curl,
+        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepositoryInterface,
+        \Magento\Customer\Model\CustomerFactory $customerFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Customer\Model\Customer $customerModel,
+        \Magento\Customer\Api\AddressRepositoryInterface $addressRepository,
+        \Magento\Eav\Model\ResourceModel\Entity\Attribute $eavAttribute,
+        \Magento\Customer\Model\ResourceModel\Customer $customerResource,
+        \ActiveCampaign\Integration\Helper\Api $apiHelper,
+        \ActiveCampaign\Api\Contacts $contacts,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_productRepositoryFactory = $productRepositoryFactory;
+        $this->productRepositoryFactory = $productRepositoryFactory;
         $this->imageHelperFactory = $imageHelperFactory;
         $this->activeCampaignOrderHelper = $activeCampaignOrderHelper;
         $this->activeCampaignHelper = $activeCampaignHelper;
-        $this->configInterface = $configInterface;
         $this->curl = $curl;
-        $this->_customerRepositoryInterface = $customerRepositoryInterface;
-        $this->storeRepository = $storeRepository;
+        $this->customerRepositoryInterface = $customerRepositoryInterface;
         $this->customerFactory = $customerFactory;
         $this->storeManager = $storeManager;
         $this->customerModel = $customerModel;
         $this->addressRepository = $addressRepository;
         $this->eavAttribute = $eavAttribute;
-        $this->coreHelper = $coreHelper;
         $this->customerResource = $customerResource;
+        $this->apiHelper = $apiHelper;
+        $this->contacts = $contacts;
+
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     /**
-     * @param $OrderSyncNum
+     * Send order data
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     *
      * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function orderDataSend($order)
+    public function orderDataSend(\Magento\Sales\Api\Data\OrderInterface $order): array
     {
-        $return = [];
-        $acOrderId = 0;
-        $isEnabled = $this->activeCampaignOrderHelper->isOrderSyncEnabled();
-        if ($isEnabled) {
-            try {
-                $connectionId = $this->activeCampaignHelper->getConnectionId($order->getStoreId());
-                $customerId = $order->getCustomerId();
-                $customerAcId = 0;
-                if ($customerId) {
-                    $this->createEcomCustomer($order->getCustomerId(), $order);
-                    $customerEmail = $order->getCustomerEmail();
-                    $customerModel = $this->customerFactory->create();
-                    $this->customerResource->load($customerModel, $customerId);
-                    if ($customerModel->getAcCustomerId()) {
-                        $customerAcId = $customerModel->getAcCustomerId();
-                    }
-                } else {
-                    $customerEmail = $order->getBillingAddress()->getEmail();
-                    $websiteId  = $this->storeManager->getWebsite()->getWebsiteId();
-                    $customerModel = $this->customerModel;
-                    $customerModel->setWebsiteId($websiteId);
-                    $customerModel->loadByEmail($customerEmail);
-                    if ($customerModel->getId()) {
-                        $customerId = $customerModel->getId();
-                    } else {
-                        $customerId = 0;
-                    }
-                    $this->createEcomCustomer($customerId, $order);
-                    $customerModel = $this->customerFactory->create();
-                    $this->customerResource->load($customerModel, $customerId);
-                    if ($customerModel->getAcCustomerId()) {
-                        $customerAcId = $customerModel->getAcCustomerId();
-                    } else {
-                        if ($order->getAcTempCustomerId()) {
-                            $customerAcId = $order->getAcTempCustomerId();
-                        } else {
-                            $AcCustomer = $this->curl->listAllCustomers(
-                                self::GET_METHOD,
-                                self::ECOM_CUSTOMER_ENDPOINT,
-                                $customerEmail
-                            );
-                            foreach ($AcCustomer['data']['ecomCustomers'] as $Ac) {
-                                if ($Ac['connectionid'] == $connectionId) {
-                                    $customerAcId = $Ac['id'];
-                                }
-                            }
-                        }
-                    }
-                }
-
-                foreach ($order->getAllVisibleItems() as $item) {
-                    $product = $this->_productRepositoryFactory->create()
-                                ->get($item->getSku());
-                    $imageUrl = $this->imageHelperFactory->create()
-                                ->init($product, 'product_thumbnail_image')->getUrl();
-                    $items[] = [
-                                "externalid" => $item->getProductId(),
-                                "name" => $item->getName(),
-                                "price" => $this->activeCampaignHelper->priceToCents($item->getPrice()),
-                                "quantity" => $item->getQtyOrdered(),
-                                "category" => implode(', ', $product->getCategoryIds()),
-                                "sku" => $item->getSku(),
-                                "description" => $item->getDescription(),
-                                "imageUrl" => $imageUrl,
-                                "productUrl" => $product->getProductUrl()
-                            ];
-                }
-                $data = [
-                            "ecomOrder" => [
-                                "externalid" => $order->getId(),
-                                "source" => 1,
-                                "email" => $customerEmail,
-                                "orderProducts" => $items,
-                                "orderDiscounts" => [
-                                    "discountAmount" => $this->activeCampaignHelper->priceToCents($order->getDiscountAmount())
-                                ],
-                                "externalCreatedDate" => $order->getCreatedAt(),
-                                "externalUpdatedDate" => $order->getUpdatedAt(),
-                                "shippingMethod" => $order->getShippingMethod(),
-                                "totalPrice" => $this->activeCampaignHelper->priceToCents($order->getGrandTotal()),
-                                "shippingAmount" => $this->activeCampaignHelper->priceToCents($order->getShippingAmount()),
-                                "taxAmount" => $this->activeCampaignHelper->priceToCents($order->getTaxAmount()),
-                                "discountAmount" => $this->activeCampaignHelper->priceToCents($order->getDiscountAmount()),
-                                "currency" => $order->getOrderCurrencyCode(),
-                                "orderNumber" => $order->getIncrementId(),
-                                "connectionid" => $connectionId,
-                                "customerid" => $customerAcId
-                            ]
-                        ];
-
-                if (!$order->getAcOrderSyncId()) {
-                    $result = $this->curl->orderDataSend(
-                        self::METHOD,
-                        self::URL_ENDPOINT,
-                        $data
-                    );
-                    if ($result['status'] == '422' || $result['status'] == '400') {
-                        $ecomAlreadyExistOrderData = [];
-                        $ecomAlreadyExistOrderResult = $this->curl->createContacts(
-                            self::GET_METHOD,
-                            self::URL_ENDPOINT,
-                            $ecomAlreadyExistOrderData
-                        );
-                        $ecomOrders = $ecomAlreadyExistOrderResult['data']['ecomOrders'];
-                        foreach ($ecomOrders as $ecomKey => $customers) {
-                            $ecomOrderArray[$ecomOrders[$ecomKey]['email']] = $ecomOrders[$ecomKey]['id'];
-                        }
-                        $acOrderId = $ecomOrderArray[$customerEmail];
-                    } else {
-                        $acOrderId = isset($result['data']['ecomOrders']['id']) ? $result['data']['ecomOrders']['id'] : null;
-                    }
-                } else {
-                    $acOrderId = $order->getAcOrderSyncId();
-                }
-
-                if ($acOrderId !=  0) {
-                    $syncStatus = CronConfig::SYNCED;
-                } else {
-                    $syncStatus = CronConfig::FAIL_SYNCED;
-                }
-
-                $order->setData("ac_order_sync_status", $syncStatus)
-                        ->setData("ac_order_sync_id", $acOrderId)
-                        ->save();
-
-                if (isset($result['success'])) {
-                    $return['success'] = __("Order data successfully synced!!");
-                }
-            } catch (\Exception $e) {
-                $return['success'] = false;
-                $return['errorMessage'] = __($e->getMessage());
-            }
+        if (!$this->activeCampaignOrderHelper->isOrderSyncEnabled()) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('ActiveCampaign Order syncing is disabled.')
+            );
         }
-        return $return;
+
+        $result = [];
+
+        try {
+            $t = $this->contacts
+                ->setConfig(
+                    $this->apiHelper->getApiKey($order->getStoreId()),
+                    $this->apiHelper->getApiUrl($order->getStoreId()),
+                    $this->apiHelper->isDebugActive($order->getStoreId()),
+                )
+                ->sync('shaughn@shaughn.pro', 'bob', 'the builder', '0215571234')
+            ;
+
+            $connectionId = $this->activeCampaignHelper->getConnectionId($order->getStoreId());
+            $customerId = $order->getCustomerId();
+            $customerAcId = 0;
+
+            if ($customerId) {
+                $this->createAcContact($order);
+                $customerEmail = $order->getCustomerEmail();
+                $customerModel = $this->customerRepositoryInterface->getById($customerId);
+
+                if ($customerModel->getAcCustomerId()) {
+                    $customerAcId = $customerModel->getAcCustomerId();
+                }
+            } else {
+                $customerEmail = $order->getBillingAddress()->getEmail();
+
+                $customerModel = $this->customerRepositoryInterface->get(
+                    $customerEmail,
+                    $this->storeManager->getWebsite()->getWebsiteId()
+                );
+
+                if ($customerModel->getId()) {
+                    $customerId = $customerModel->getId();
+                } else {
+                    $customerId = 0;
+                }
+
+                $this->createAcContact($order);
+
+                $customerModel = $this->customerFactory->create();
+                $this->customerResource->load($customerModel, $customerId);
+
+                if ($customerModel->getAcCustomerId()) {
+                    $customerAcId = $customerModel->getAcCustomerId();
+                } elseif ($order->getAcTempCustomerId()) {
+                    $customerAcId = $order->getAcTempCustomerId();
+                } else {
+                    $acCustomer = $this->curl->listAllCustomers(
+                        self::GET_METHOD,
+                        self::ECOM_CUSTOMER_ENDPOINT,
+                        $customerEmail
+                    );
+
+                    foreach ($acCustomer['data']['ecomCustomers'] as $ac) {
+                        if ($ac['connectionid'] == $connectionId) {
+                            $customerAcId = $ac['id'];
+                        }
+                    }
+                }
+            }
+
+            $items = [];
+
+            foreach ($order->getAllVisibleItems() as $item) {
+                $product = $this->productRepositoryFactory->create()
+                    ->get($item->getSku());
+                $imageUrl = $this->imageHelperFactory->create()
+                    ->init($product, 'product_thumbnail_image')->getUrl();
+
+                $items[] = [
+                    'externalid'    => $item->getProductId(),
+                    'name'          => $item->getName(),
+                    'price'         => $this->activeCampaignHelper->priceToCents($item->getPrice()),
+                    'quantity'      => $item->getQtyOrdered(),
+                    'category'      => implode(', ', $product->getCategoryIds()),
+                    'sku'           => $item->getSku(),
+                    'description'   => $item->getDescription(),
+                    'imageUrl'      => $imageUrl,
+                    'productUrl'    => $product->getProductUrl()
+                ];
+            }
+
+            $data = [
+                'ecomOrder' => [
+                    'externalid'            => $order->getId(),
+                    'source'                => 1,
+                    'email'                 => $customerEmail,
+                    'orderProducts'         => $items,
+                    'orderDiscounts'        => [
+                        'discountAmount' => $this->activeCampaignHelper->priceToCents($order->getDiscountAmount())
+                    ],
+                    'externalCreatedDate'   => $order->getCreatedAt(),
+                    'externalUpdatedDate'   => $order->getUpdatedAt(),
+                    'shippingMethod'        => $order->getShippingMethod(),
+                    'totalPrice'            => $this->activeCampaignHelper->priceToCents($order->getGrandTotal()),
+                    'shippingAmount'        => $this->activeCampaignHelper->priceToCents($order->getShippingAmount()),
+                    'taxAmount'             => $this->activeCampaignHelper->priceToCents($order->getTaxAmount()),
+                    'discountAmount'        => $this->activeCampaignHelper->priceToCents($order->getDiscountAmount()),
+                    'currency'              => $order->getOrderCurrencyCode(),
+                    'orderNumber'           => $order->getIncrementId(),
+                    'connectionid'          => $connectionId,
+                    'customerid'            => $customerAcId
+                ]
+            ];
+
+            if (!$order->getAcOrderSyncId()) {
+                $result = $this->curl->genericRequest(
+                    self::METHOD,
+                    self::URL_ENDPOINT,
+                    $data
+                );
+
+                if ($result['status'] == '422' || $result['status'] == '400') {
+                    $ecomAlreadyExistOrderData = [];
+                    $ecomAlreadyExistOrderResult = $this->curl->genericRequest(
+                        self::GET_METHOD,
+                        self::URL_ENDPOINT,
+                        $ecomAlreadyExistOrderData
+                    );
+
+                    $ecomOrders = $ecomAlreadyExistOrderResult['data']['ecomOrders'];
+
+                    foreach ($ecomOrders as $ecomKey => $customers) {
+                        $ecomOrderArray[$ecomOrders[$ecomKey]['email']] = $ecomOrders[$ecomKey]['id'];
+                    }
+
+                    $acOrderId = $ecomOrderArray[$customerEmail];
+                } else {
+                    $acOrderId = $result['data']['ecomOrders']['id'] ?? null;
+                }
+            } else {
+                $acOrderId = $order->getAcOrderSyncId();
+            }
+
+            if ($acOrderId !== 0) {
+                $syncStatus = \ActiveCampaign\AbandonedCart\Model\Config\CronConfig::SYNCED;
+            } else {
+                $syncStatus = \ActiveCampaign\AbandonedCart\Model\Config\CronConfig::FAIL_SYNCED;
+            }
+
+            /**
+             * @todo Use repository save
+             */
+            $order->setData('ac_order_sync_status', $syncStatus)
+                ->setData('ac_order_sync_id', $acOrderId)
+                ->save();
+
+            if (isset($result['success'])) {
+                $result['success'] = __('Order data successfully synced!!');
+            }
+        } catch (\Exception $e) {
+            $result['success'] = false;
+            $result['errorMessage'] = __($e->getMessage());
+        }
+
+        return $result;
     }
 
     /**
@@ -327,11 +350,11 @@ class OrderDataSend extends \Magento\Framework\Model\AbstractModel
     private function getFieldValues($customerId)
     {
         $fieldValues = [];
-        $customAttributes = $this->_customerRepositoryInterface->getById($customerId);
+        $customAttributes = $this->customerRepositoryInterface->getById($customerId);
         $customAttributes->getCustomAttributes();
         if (!empty($customAttributes)) {
             foreach ($customAttributes as $attribute) {
-                $attributeId = $this->eavAttribute->getIdByCode(CustomerModel::ENTITY, $attribute->getAttributeCode());
+                $attributeId = $this->eavAttribute->getIdByCode(\Magento\Customer\Model\Customer::ENTITY, $attribute->getAttributeCode());
                 $attributeValues['field'] = $attributeId;
                 $attributeValues['value'] = $attribute->getValue();
                 $fieldValues[] = $attributeValues;
@@ -341,52 +364,59 @@ class OrderDataSend extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param $customerId
-     * @return array
+     * Create AC contact
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     *
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function getCustomer($customerId)
-    {
-        $customerModel = $this->customerFactory->create();
-        $this->customerResource->load($customerModel, $customerId);
-        return $customerModel;
-    }
-
-    /**
-     * @param $customerId
-     * @return array
-     */
-    private function createEcomCustomer($customerId, $quote)
-    {
+    private function createAcContact(
+        \Magento\Sales\Api\Data\OrderInterface $order
+    ) {
         $ecomOrderArray = [];
         $ecomCustomerId = 0;
-        $syncStatus = CronConfig::NOT_SYNCED;
-        $customer = $this->getCustomer($customerId);
-        if ($customerId) {
-            $customerId = $customer->getId();
-            $contact['email'] = $customer->getEmail();
-            $customerEmail = $customer->getEmail();
-            $contact['firstName'] = $customer->getFirstname();
-            $contact['lastName'] = $customer->getLastname();
-            $contact['phone'] = $this->getTelephone($customer->getDefaultBilling());
-            $contact['fieldValues'] = $this->getFieldValues($customerId);
-        } else {
-            $customerId = 0;
-            $contact['email'] = $quote->getBillingAddress()->getEmail();
-            $customerEmail = $quote->getBillingAddress()->getEmail();
-            $contact['firstName'] = $quote->getBillingAddress()->getFirstname();
-            $contact['lastName'] = $quote->getBillingAddress()->getLastname();
-            $contact['phone'] = $quote->getBillingAddress()->getTelephone();
-            $contact['fieldValues'] = [];
-        }
-        $contactData['contact'] = $contact;
-        try {
-            $contactResult = $this->curl->createContacts(self::METHOD, self::CONTACT_ENDPOINT, $contactData);
-            $contactId = isset($contactResult['data']['contact']['id']) ? $contactResult['data']['contact']['id'] : null;
-            $connectionid = $this->coreHelper->getConnectionId($customer->getStoreId());
+        $syncStatus = \ActiveCampaign\AbandonedCart\Model\Config\CronConfig::NOT_SYNCED;
 
-            if (isset($contactResult['data']['contact']['id'])) {
+        try {
+            $customer = $this->customerRepositoryInterface->getById($order->getCustomerId());
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+            $customer = null;
+        }
+
+        $customerId = $customer ? $customer->getId() : $order->getCustomerId();
+        $customerEmail = $customer ? $customer->getEmail() : $order->getBillingAddress()->getEmail();
+
+        $contact = [
+            'contact' => [
+                'email'     => $customerEmail,
+                'firstName' => $customer ? $customer->getFirstname() : $order->getBillingAddress()->getFirstname(),
+                'lastName'  => $customer ? $customer->getLastname() : $order->getBillingAddress()->getLastname(),
+                'phone'     => $customer
+                    ? $this->getTelephone($customer->getDefaultBilling())
+                    : $order->getBillingAddress()->getTelephone(),
+                'fieldValues'   => $customer ? $this->getFieldValues((int)$customer->getId()) : []
+            ]
+        ];
+
+        try {
+            // Contact sync
+            $contactResult = $this->curl->genericRequest(
+                self::METHOD,
+                self::CONTACT_ENDPOINT,
+                $contact
+            );
+
+            $contactId = $contactResult['data']['contact']['id'] ?? null;
+
+            $connectionId = $this->activeCampaignHelper->getConnectionId($customer->getStoreId());
+
+            // Only create existing customer (no guests)
+            if ($contactId && $customerId) {
                 if (!$customer->getAcCustomerId()) {
-                    $ecomCustomer['connectionid'] = $connectionid;
+                    $ecomCustomer['connectionid'] = $connectionId;
                     $ecomCustomer['externalid'] = $customerId;
                     $ecomCustomer['email'] = $customerEmail;
                     $ecomCustomerData['ecomCustomer'] = $ecomCustomer;
@@ -397,13 +427,13 @@ class OrderDataSend extends \Magento\Framework\Model\AbstractModel
                     );
                     if (ISSET($AcCustomer['data']['ecomCustomers'][0])) {
                         foreach ($AcCustomer['data']['ecomCustomers'] as $Ac) {
-                            if ($Ac['connectionid'] == $connectionid) {
+                            if ($Ac['connectionid'] == $connectionId) {
                                 $ecomCustomerId = $Ac['id'];
                             }
                         }
                     }
                     if (!$ecomCustomerId) {
-                        $ecomCustomerResult = $this->curl->createContacts(
+                        $ecomCustomerResult = $this->curl->genericRequest(
                             self::METHOD,
                             self::ECOM_CUSTOMERLIST_ENDPOINT,
                             $ecomCustomerData
@@ -416,15 +446,15 @@ class OrderDataSend extends \Magento\Framework\Model\AbstractModel
             }
 
             if ($ecomCustomerId !=  0) {
-                $syncStatus = CronConfig::SYNCED;
+                $syncStatus = \ActiveCampaign\AbandonedCart\Model\Config\CronConfig::SYNCED;
             } else {
-                $syncStatus = CronConfig::FAIL_SYNCED;
+                $syncStatus = \ActiveCampaign\AbandonedCart\Model\Config\CronConfig::FAIL_SYNCED;
             }
 
             if ($customerId) {
                 $this->saveCustomerResult($customerId, $syncStatus, $contactId, $ecomCustomerId);
             } else {
-                $this->saveCustomerResultQuote($quote, $ecomCustomerId);
+                $this->saveCustomerResultQuote($order, $ecomCustomerId);
             }
         } catch (\Exception $e) {
             $this->logger->critical("MODULE Order " . $e);
