@@ -26,6 +26,6 @@
         </arguments>
     </type>
     <type name="Magento\Customer\Api\CustomerRepositoryInterface">
-        <plugin name="check_for_updates" type="ActiveCampaign\Integration\Plugin\Customer\Api\CustomerRepository\CheckForUpdates"/>
+        <plugin name="ac_update_contact" type="ActiveCampaign\Integration\Plugin\Customer\Api\CustomerRepository\UpdateContact"/>
     </type>
 </config>

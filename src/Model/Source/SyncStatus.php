@@ -11,6 +11,7 @@ class SyncStatus extends \Magento\Eav\Model\Entity\Attribute\Source\Table
     public const STATUS_PENDING = 0;
     public const STATUS_COMPLETE = 1;
     public const STATUS_FAILED = 2;
+    public const STATUS_UPDATE = 3;
 
     /**
      * @inheritdoc
@@ -23,15 +24,19 @@ class SyncStatus extends \Magento\Eav\Model\Entity\Attribute\Source\Table
             $this->_options = [
                 [
                     'value' => self::STATUS_PENDING,
-                    'label' => 'Sync Pending'
+                    'label' => 'Pending'
                 ],
                 [
                     'value' => self::STATUS_COMPLETE,
-                    'label' => 'Sync Complete'
+                    'label' => 'Complete'
                 ],
                 [
                     'value' => self::STATUS_FAILED,
-                    'label' => 'Sync Failed'
+                    'label' => 'Failed'
+                ],
+                [
+                    'value' => self::STATUS_UPDATE,
+                    'label' => 'Update Pending'
                 ]
             ];
 

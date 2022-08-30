@@ -6,7 +6,7 @@ namespace ActiveCampaign\Integration\Model;
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Customer extends \Magento\Framework\Model\AbstractModel implements \ActiveCampaign\Integration\Model\SyncInterface
+class Customer extends \ActiveCampaign\Integration\Model\AbstractSync
 {
     /**
      * @var \ActiveCampaign\Integration\Helper\Api
@@ -49,6 +49,8 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
     protected $eavAttribute;
 
     /**
+     * Construct
+     *
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \ActiveCampaign\Integration\Helper\Api $apiHelper
@@ -104,7 +106,7 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
         if ($customer->getCustomAttribute(\ActiveCampaign\Integration\Model\CustomerAttribute::AC_CONTACT_ID)) {
             return (int)$customer->getCustomAttribute(
                 \ActiveCampaign\Integration\Model\CustomerAttribute::AC_CONTACT_ID
-            );
+            )->getValue();
         }
 
         return null;
@@ -122,7 +124,7 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
         if ($customer->getCustomAttribute(\ActiveCampaign\Integration\Model\CustomerAttribute::AC_CUSTOMER_ID)) {
             return (int)$customer->getCustomAttribute(
                 \ActiveCampaign\Integration\Model\CustomerAttribute::AC_CUSTOMER_ID
-            );
+            )->getValue();
         }
 
         return null;
@@ -139,17 +141,11 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
     {
         return (int)$customer->getCustomAttribute(
             \ActiveCampaign\Integration\Model\CustomerAttribute::AC_SYNC_STATUS
-        );
+        )->getValue();
     }
 
     /**
-     * Iterator callback
-     *
-     * Sync contacts traversed by the resource iterator.
-     *
-     * @param array $args
-     *
-     * @return void
+     * @inheirtdoc
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Exception
      */
@@ -162,7 +158,7 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
 
             $customer = $this->customerRepository->getById((int)$args['row']['entity_id']);
 
-            $this->syncContactFromCustomer($customer);
+            $this->syncContact($customer);
         } catch (\Exception $e) {
             // Log exception and continue walk
             $this->apiHelper->logger->critical($e);
@@ -171,25 +167,19 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
         }
     }
 
-    public function sync()
-    {
-
-    }
-
     /**
-     * Sync contact from customer object
+     * Sync contact
      *
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      *
-     * @return void
+     * @return \Magento\Customer\Api\Data\CustomerInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Exception
      */
-    public function syncContactFromCustomer(
-        \Magento\Customer\Api\Data\CustomerInterface $customer,
-        bool $save = false
-    ): void {
-        $exception = null;
+    public function syncContact(
+        \Magento\Customer\Api\Data\CustomerInterface $customer
+    ) {
+        $customer->setData('ignore_validation_flag', true);
 
         try {
             $contact = $this->contactFactory->create();
@@ -203,11 +193,20 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
             ;
 
             // Sync contact
-            $contactResponse = $this->contactsApi->setConfig(
+            $this->contactsApi->setConfig(
                 $this->apiHelper->getApiKey($customer->getStoreId()),
                 $this->apiHelper->getApiUrl($customer->getStoreId()),
                 $this->apiHelper->isDebugActive($customer->getStoreId())
-            )->sync($contact);
+            );
+
+            if ($this->getAcContactId($customer)) {
+                $contactResponse = $this->contactsApi->update(
+                    $this->getAcContactId($customer),
+                    $contact
+                );
+            } else {
+                $contactResponse = $this->contactsApi->sync($contact);
+            }
 
             if (empty($contactResponse->result['contact']['id'])) {
                 throw new \Magento\Framework\Exception\LocalizedException(
@@ -235,20 +234,20 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
                 \ActiveCampaign\Integration\Model\CustomerAttribute::AC_SYNC_STATUS,
                 \ActiveCampaign\Integration\Model\Source\SyncStatus::STATUS_COMPLETE
             );
-        } catch (\Exception $exception) {
+
+            $this->customerRepository->save($customer);
+        } catch (\Exception $e) {
             $customer->setCustomAttribute(
                 \ActiveCampaign\Integration\Model\CustomerAttribute::AC_SYNC_STATUS,
                 \ActiveCampaign\Integration\Model\Source\SyncStatus::STATUS_FAILED
             );
+
+            $this->customerRepository->save($customer);
+
+            throw $e;
         }
 
-        $customer->setData('ignore_validation_flag', true);
-
-        $this->customerRepository->save($customer);
-
-        if ($exception instanceof \Exception) {
-            throw $exception;
-        }
+        return $customer;
     }
 
     /**
@@ -263,14 +262,6 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
     public function syncContactFromOrder(
         \Magento\Sales\Api\Data\OrderInterface $order
     ): int {
-        try {
-            $customer = $this->customerRepository->getById($order->getCustomerId());
-
-            return $this->syncContactFromCustomer($customer);
-        } catch (\Magento\Framework\Exception\NoSuchEntityException) {
-            $customer = null;
-        }
-
         $contact = $this->contactFactory->create();
 
         $contact
@@ -280,7 +271,42 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
             ->setPhone($order->getBillingAddress()->getTelephone())
         ;
 
-        return $this->syncContact($contact, $order->getStoreId());
+        // Sync contact
+        $contactResponse = $this->contactsApi->setConfig(
+            $this->apiHelper->getApiKey($order->getStoreId()),
+            $this->apiHelper->getApiUrl($order->getStoreId()),
+            $this->apiHelper->isDebugActive($order->getStoreId())
+        )->sync($contact);
+
+        if (empty($contactResponse->result['contact']['id'])) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('Unable to retrieve contact ID from result')
+            );
+        }
+
+        return (int)$contactResponse->result['contact']['id'];
+    }
+
+    /**
+     * Delete contact
+     *
+     * @param \Magento\Customer\Api\Data\CustomerInterface $customer
+     *
+     * @return void
+     * @throws \ActiveCampaign\Gateway\ResultException
+     */
+    public function deleteContact(
+        \Magento\Customer\Api\Data\CustomerInterface $customer
+    ): void {
+        $acContactId = $this->getAcContactId($customer);
+
+        if ($acContactId) {
+            $this->contactsApi->setConfig(
+                $this->apiHelper->getApiKey($customer->getStoreId()),
+                $this->apiHelper->getApiUrl($customer->getStoreId()),
+                $this->apiHelper->isDebugActive($customer->getStoreId())
+            )->delete($acContactId);
+        }
     }
 
     /**
@@ -292,7 +318,7 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
      * @throws \ActiveCampaign\Gateway\ResultException
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function syncEcomCustomer(
+    private function syncEcomCustomer(
         \Magento\Customer\Api\Data\CustomerInterface $customer
     ): ?int {
         $connectionId = $this->apiHelper->getConnectionId($customer->getStoreId());
@@ -312,10 +338,11 @@ class Customer extends \Magento\Framework\Model\AbstractModel implements \Active
                 $this->apiHelper->isDebugActive($customer->getStoreId())
             );
 
-            $acCustomerId = $this->getAcCustomerId($customer);
-
-            if ($acCustomerId) {
-                $ecomCustomerResponse = $this->ecomCustomersApi->update($acCustomerId, $ecomCustomer);
+            if ($this->getAcCustomerId($customer)) {
+                $ecomCustomerResponse = $this->ecomCustomersApi->update(
+                    $this->getAcCustomerId($customer),
+                    $ecomCustomer
+                );
             } else {
                 $ecomCustomerResponse = $this->ecomCustomersApi->create($ecomCustomer);
             }

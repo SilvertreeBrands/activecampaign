@@ -62,7 +62,10 @@ class SyncCustomer
                         ],
                         [
                             'attribute' => \ActiveCampaign\Integration\Model\CustomerAttribute::AC_SYNC_STATUS,
-                            'eq'        => \ActiveCampaign\Integration\Model\Source\SyncStatus::STATUS_PENDING
+                            'in'        => [
+                                \ActiveCampaign\Integration\Model\Source\SyncStatus::STATUS_PENDING,
+                                \ActiveCampaign\Integration\Model\Source\SyncStatus::STATUS_UPDATE
+                            ]
                         ]
                     ])
                     ->setPageSize($this->customerHelper->getSyncBatchSize());

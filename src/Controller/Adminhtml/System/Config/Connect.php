@@ -75,11 +75,6 @@ class Connect extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $this->cronSyncCustomer->execute();
-
-        $customer = $this->customerRepository->getById(2438657);
-        $t = $this->acCustomer->syncContactFromCustomer($customer);
-        throw new \Magento\Framework\Exception\LocalizedException(__('Testing'));
         $storeId = $this->getStoreId();
         $resultJson = $this->resultJsonFactory->create();
 
