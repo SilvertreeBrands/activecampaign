@@ -5,20 +5,25 @@
             <action name="ac_sync">
                 <settings>
                     <confirm>
-                        <message translate="true">Are you sure you want to sync the selected customers in the ActiveCampaign?</message>
+                        <message translate="true">Are you sure you want to sync the selected customers to ActiveCampaign?</message>
                         <title translate="true">Sync</title>
                     </confirm>
-                    <url path="activecampaign_customer/Customer/MassSync"/>
+                    <url path="activecampaign/customer/massSync"/>
                     <type>sync</type>
                     <label translate="true">Sync to ActiveCampaign</label>
                 </settings>
             </action>
         </massaction>
     </listingToolbar>
-    <columns name="customer_columns" class="Magento\Customer\Ui\Component\Listing\Columns">
-        <column name="ac_sync_status" class="ActiveCampaign\Customer\Ui\Component\Listing\Column\AcSyncStatus" sortOrder="300">
+    <columns name="customer_columns">
+        <column name="ac_sync_status" component="Magento_Ui/js/grid/columns/select" sortOrder="300">
             <settings>
+                <options class="ActiveCampaign\Integration\Model\Source\SyncStatus"/>
+                <filter>select</filter>
                 <dataType>select</dataType>
+                <editor>
+                    <editorType>select</editorType>
+                </editor>
                 <label translate="true">ActiveCampaign Sync Status</label>
                 <visible>true</visible>
             </settings>

@@ -8,37 +8,37 @@ class Connection extends \ActiveCampaign\Api\Models\AbstractModel
     /**
      * @var string
      */
-    private $service;
+    protected $service;
 
     /**
      * @var string
      */
-    private $externalid;
+    protected $externalid;
 
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      */
-    private $logoUrl;
+    protected $logoUrl;
 
     /**
      * @var string
      */
-    private $linkUrl;
+    protected $linkUrl;
 
     /**
      * @var int
      */
-    private $status;
+    protected $status;
 
     /**
      * @var int
      */
-    private $syncStatus;
+    protected $syncStatus;
 
     /**
      * Set service

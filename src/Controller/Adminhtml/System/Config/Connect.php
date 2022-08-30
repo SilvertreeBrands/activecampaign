@@ -40,19 +40,28 @@ class Connect extends \Magento\Backend\App\Action
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \ActiveCampaign\Integration\Helper\Api $apiHelper
      * @param \ActiveCampaign\Api\Connection $connectionApi
+     * @param \ActiveCampaign\Integration\Model\Customer $acCustomer
+     * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
+     * @param \ActiveCampaign\Integration\Cron\SyncCustomer $cronSyncCustomer
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \ActiveCampaign\Integration\Helper\Api $apiHelper,
-        \ActiveCampaign\Api\Connection $connectionApi
+        \ActiveCampaign\Api\Connection $connectionApi,
+        \ActiveCampaign\Integration\Model\Customer $acCustomer,
+        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
+        \ActiveCampaign\Integration\Cron\SyncCustomer $cronSyncCustomer
     ) {
         $this->resultJsonFactory = $resultJsonFactory;
         $this->storeManager = $storeManager;
         $this->apiHelper = $apiHelper;
         $this->connectionApi = $connectionApi;
         $this->urlBuilder = $context->getUrl();
+        $this->acCustomer = $acCustomer;
+        $this->customerRepository = $customerRepository;
+        $this->cronSyncCustomer = $cronSyncCustomer;
 
         parent::__construct($context);
     }
@@ -66,6 +75,11 @@ class Connect extends \Magento\Backend\App\Action
      */
     public function execute()
     {
+        $this->cronSyncCustomer->execute();
+
+        $customer = $this->customerRepository->getById(2438657);
+        $t = $this->acCustomer->syncContactFromCustomer($customer);
+        throw new \Magento\Framework\Exception\LocalizedException(__('Testing'));
         $storeId = $this->getStoreId();
         $resultJson = $this->resultJsonFactory->create();
 

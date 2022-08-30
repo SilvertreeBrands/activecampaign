@@ -10,30 +10,16 @@ class Contacts extends \ActiveCampaign\Gateway\Client
      *
      * @see https://developers.activecampaign.com/reference/sync-a-contacts-data
      *
-     * @param string $email
-     * @param string $firstName
-     * @param string $lastName
-     * @param string $phone
-     * @param array $fieldValues
+     * @param \ActiveCampaign\Api\Models\Contact $contact
      *
      * @return \ActiveCampaign\Gateway\Response
      * @throws \ActiveCampaign\Gateway\ResultException
      */
     public function sync(
-        string $email,
-        string $firstName = '',
-        string $lastName = '',
-        string $phone = '',
-        array $fieldValues = []
+        \ActiveCampaign\Api\Models\Contact $contact
     ): \ActiveCampaign\Gateway\Response {
         $payload = [
-            'contact'   => [
-                'email'         => $email,
-                'firstName'     => $firstName,
-                'lastName'      => $lastName,
-                'phone'         => $phone,
-                'fieldValues'   => $fieldValues
-            ]
+            'contact' => $contact->extractPayload()
         ];
 
         return $this->request(

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace ActiveCampaign\Api\Ecommerce;
+namespace ActiveCampaign\Api;
 
-class Orders extends \ActiveCampaign\Gateway\Client
+class EcomOrders extends \ActiveCampaign\Gateway\Client
 {
     /**
      * Create

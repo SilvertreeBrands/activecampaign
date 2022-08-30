@@ -8,97 +8,97 @@ class EcomOrder extends \ActiveCampaign\Api\Models\AbstractModel
     /**
      * @var string
      */
-    private $externalid;
+    protected $externalid;
 
     /**
      * @var string
      */
-    private $externalcheckoutid;
+    protected $externalcheckoutid;
 
     /**
      * @var int
      */
-    private $source;
+    protected $source;
 
     /**
      * @var string
      */
-    private $email;
+    protected $email;
 
     /**
      * @var EcomOrderProducts[]
      */
-    private $orderProducts;
+    protected $orderProducts;
 
     /**
      * @var int
      */
-    private $totalPrice;
+    protected $totalPrice;
 
     /**
      * @var int
      */
-    private $shippingAmount;
+    protected $shippingAmount;
 
     /**
      * @var int
      */
-    private $taxAmount;
+    protected $taxAmount;
 
     /**
      * @var int
      */
-    private $discountAmount;
+    protected $discountAmount;
 
     /**
      * @var string
      */
-    private $currency;
+    protected $currency;
 
     /**
      * @var int
      */
-    private $connectionid;
+    protected $connectionid;
 
     /**
      * @var int
      */
-    private $customerid;
+    protected $customerid;
 
     /**
      * @var string
      */
-    private $orderUrl;
+    protected $orderUrl;
 
     /**
      * @var string
      */
-    private $externalCreatedDate;
+    protected $externalCreatedDate;
 
     /**
      * @var string
      */
-    private $externalUpdatedDate;
+    protected $externalUpdatedDate;
 
     /**
      * @var string
      */
-    private $abandonedDate;
+    protected $abandonedDate;
 
     /**
      * @var string
      */
-    private $shippingMethod;
+    protected $shippingMethod;
 
     /**
      * @var string
      */
-    private $orderNumber;
+    protected $orderNumber;
 
     /**
      * @var EcomOrderDiscounts[]
      */
-    private $orderDiscounts;
+    protected $orderDiscounts;
 
     /**
      * Set external ID

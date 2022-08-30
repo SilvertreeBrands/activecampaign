@@ -8,17 +8,17 @@ class EcomOrderDiscounts extends \ActiveCampaign\Api\Models\AbstractModel
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      */
-    private $type;
+    protected $type;
 
     /**
      * @var int
      */
-    private $discountAmount;
+    protected $discountAmount;
 
     /**
      * Set name

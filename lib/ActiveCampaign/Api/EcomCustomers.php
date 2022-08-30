@@ -1,40 +1,26 @@
 <?php
 declare(strict_types=1);
 
-namespace ActiveCampaign\Api\Ecommerce;
+namespace ActiveCampaign\Api;
 
-class Customers extends \ActiveCampaign\Gateway\Client
+class EcomCustomers extends \ActiveCampaign\Gateway\Client
 {
     /**
      * Create
      *
      * @see https://developers.activecampaign.com/reference/create-customer
      *
-     * @param string $connectionId
-     * @param string $externalId
-     * @param string $email
-     * @param string $acceptsMarketing
+     * @param \ActiveCampaign\Api\Models\EcomCustomer $ecomCustomer
      *
      * @return \ActiveCampaign\Gateway\Response
      * @throws \ActiveCampaign\Gateway\ResultException
      */
     public function create(
-        string $connectionId,
-        string $externalId,
-        string $email,
-        string $acceptsMarketing = ''
+        \ActiveCampaign\Api\Models\EcomCustomer $ecomCustomer
     ): \ActiveCampaign\Gateway\Response {
         $payload = [
-            'ecomCustomer'   => [
-                'connectionid'  => $connectionId,
-                'externalid'    => $externalId,
-                'email'         => $email
-            ]
+            'ecomCustomer' => $ecomCustomer->extractPayload()
         ];
-
-        if ($acceptsMarketing) {
-            $payload['ecomCustomer']['acceptsMarketing'] = $acceptsMarketing;
-        }
 
         return $this->request(
             'ecomCustomers',
@@ -71,38 +57,18 @@ class Customers extends \ActiveCampaign\Gateway\Client
      * @see https://developers.activecampaign.com/reference/update-customer
      *
      * @param int $ecomCustomerId
-     * @param string $externalId
-     * @param string $connectionId
-     * @param string $email
-     * @param string $acceptsMarketing
+     * @param \ActiveCampaign\Api\Models\EcomCustomer $ecomCustomer
      *
      * @return \ActiveCampaign\Gateway\Response
      * @throws \ActiveCampaign\Gateway\ResultException
      */
     public function update(
         int $ecomCustomerId,
-        string $externalId = '',
-        string $connectionId = '',
-        string $email = '',
-        string $acceptsMarketing = ''
+        \ActiveCampaign\Api\Models\EcomCustomer $ecomCustomer
     ): \ActiveCampaign\Gateway\Response {
-        $payload = ['ecomCustomer' => []];
-
-        if ($externalId) {
-            $payload['ecomCustomer']['externalid'] = $externalId;
-        }
-
-        if ($connectionId) {
-            $payload['ecomCustomer']['connectionid'] = $connectionId;
-        }
-
-        if ($email) {
-            $payload['ecomCustomer']['email'] = $email;
-        }
-
-        if ($acceptsMarketing) {
-            $payload['ecomCustomer']['acceptsMarketing'] = $acceptsMarketing;
-        }
+        $payload = [
+            'ecomCustomer' => $ecomCustomer->extractPayload()
+        ];
 
         return $this->request(
             'ecomCustomers/' . $ecomCustomerId,

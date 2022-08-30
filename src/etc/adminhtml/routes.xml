@@ -5,14 +5,5 @@
         <route id="activecampaign" frontName="activecampaign">
             <module name="ActiveCampaign_Integration" before="Magento_Backend" />
         </route>
-        <route id="ac_customer" frontName="ac_customer">
-            <module name="ActiveCampaign_Integration" before="Magento_Backend" />
-        </route>
-        <route id="ac_order" frontName="ac_order">
-            <module name="ActiveCampaign_Integration" before="Magento_Backend" />
-        </route>
-        <route id="ac_abandoned_cart" frontName="ac_abandoned_cart">
-            <module name="ActiveCampaign_Integration" before="Magento_Backend" />
-        </route>
     </router>
 </config>

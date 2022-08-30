@@ -25,4 +25,7 @@
             <argument name="logger" xsi:type="object">ActiveCampaign\Integration\Logger\Logger</argument>
         </arguments>
     </type>
+    <type name="Magento\Customer\Api\CustomerRepositoryInterface">
+        <plugin name="check_for_updates" type="ActiveCampaign\Integration\Plugin\Customer\Api\CustomerRepository\CheckForUpdates"/>
+    </type>
 </config>

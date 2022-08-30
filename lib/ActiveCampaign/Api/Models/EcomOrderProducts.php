@@ -8,47 +8,47 @@ class EcomOrderProducts extends \ActiveCampaign\Api\Models\AbstractModel
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var int
      */
-    private $price;
+    protected $price;
 
     /**
      * @var int
      */
-    private $quantity;
+    protected $quantity;
 
     /**
      * @var string
      */
-    private $externalid;
+    protected $externalid;
 
     /**
      * @var string
      */
-    private $category;
+    protected $category;
 
     /**
      * @var string
      */
-    private $sku;
+    protected $sku;
 
     /**
      * @var string
      */
-    private $description;
+    protected $description;
 
     /**
      * @var string
      */
-    private $imageUrl;
+    protected $imageUrl;
 
     /**
      * @var string
      */
-    private $productUrl;
+    protected $productUrl;
 
     /**
      * Set name

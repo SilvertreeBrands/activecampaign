@@ -15,7 +15,6 @@
     },
     "replace": {
         "activecampaign/core": "self.version",
-        "activecampaign/customer": "self.version",
         "activecampaign/abandoned-cart": "self.version",
         "activecampaign/order": "self.version",
         "activecampaign/sync-log": "self.version"
@@ -23,7 +22,6 @@
     "autoload": {
         "files": [
             "src/registration.php",
-            "Customer/registration.php",
             "AbandonedCart/registration.php",
             "Order/registration.php",
             "SyncLog/registration.php"
@@ -32,7 +30,6 @@
             "ActiveCampaign\\Integration\\": "src",
             "ActiveCampaign\\Gateway\\": "lib/ActiveCampaign/Gateway",
             "ActiveCampaign\\Api\\": "lib/ActiveCampaign/Api",
-            "ActiveCampaign\\Customer\\": "Customer",
             "ActiveCampaign\\AbandonedCart\\": "AbandonedCart",
             "ActiveCampaign\\Order\\": "Order",
             "ActiveCampaign\\SyncLog\\": "SyncLog"
