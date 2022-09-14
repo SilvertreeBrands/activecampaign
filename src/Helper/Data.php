@@ -7,9 +7,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     protected const MODULE_CONFIG_PATH = 'activecampaign_integration/general';
 
-    public const COLUMN_AC_SYNC_ID = 'ac_sync_id';
-    public const COLUMN_AC_SYNC_STATUS = 'ac_sync_status';
-
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */

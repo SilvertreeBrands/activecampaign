@@ -6,7 +6,29 @@
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="ActiveCampaign_Integration::activecampaign_config" title="ActiveCampaign Config" translate="title" sortOrder="60" />
+                            <resource id="ActiveCampaign_Integration::activecampaign_config"
+                                      title="ActiveCampaign Config"
+                                      translate="title"
+                                      sortOrder="60">
+                                <resource id="ActiveCampaign_Integration::customer"
+                                          title="Customer Management"
+                                          translate="title"
+                                          sortOrder="0">
+                                    <resource id="ActiveCampaign_Integration::customer_mass_sync"
+                                              title="Mass Sync"
+                                              translate="title"
+                                              sortOrder="0" />
+                                </resource>
+                                <resource id="ActiveCampaign_Integration::order"
+                                          title="Order Management"
+                                          translate="title"
+                                          sortOrder="1">
+                                    <resource id="ActiveCampaign_Integration::order_mass_sync"
+                                              title="Mass Sync"
+                                              translate="title"
+                                              sortOrder="0" />
+                                </resource>
+                            </resource>
                         </resource>
                     </resource>
                 </resource>

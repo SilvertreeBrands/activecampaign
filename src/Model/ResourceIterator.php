@@ -35,7 +35,7 @@ class ResourceIterator extends \Magento\Framework\Model\ResourceModel\Iterator
                     if (!empty($result)) {
                         $args = array_merge($args, (array)$result);
                     }
-                } catch (\Exception) {
+                } catch (\Exception $e) {
                     $this->errorCount++;
                 }
 

@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace ActiveCampaign\Integration\Controller\Adminhtml\Customer;
+namespace ActiveCampaign\Integration\Controller\Adminhtml\Order;
 
 class MassSync extends \Magento\Backend\App\Action implements \Magento\Framework\App\Action\HttpPostActionInterface
 {
     /**
      * Authorization level of a basic admin session
      */
-    public const ADMIN_RESOURCE = 'ActiveCampaign_Integration::customer_mass_sync';
+    public const ADMIN_RESOURCE = 'ActiveCampaign_Integration::order_mass_sync';
 
     /**
      * @var \Magento\Ui\Component\MassAction\Filter
@@ -16,7 +16,7 @@ class MassSync extends \Magento\Backend\App\Action implements \Magento\Framework
     private $filter;
 
     /**
-     * @var \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory
+     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
     private $collectionFactory;
 
@@ -26,38 +26,38 @@ class MassSync extends \Magento\Backend\App\Action implements \Magento\Framework
     private $resourceIterator;
 
     /**
-     * @var \ActiveCampaign\Integration\Model\Sync\Queue\Contact
+     * @var \ActiveCampaign\Integration\Model\Sync\Prepare\Order
      */
-    private $syncQueue;
+    private $syncPrepareOrder;
 
     /**
-     * @var \ActiveCampaign\Integration\Helper\Customer
+     * @var \ActiveCampaign\Integration\Helper\Order
      */
-    private $customerHelper;
+    private $orderHelper;
 
     /**
      * Construct
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Ui\Component\MassAction\Filter $filter
-     * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $collectionFactory
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \ActiveCampaign\Integration\Model\ResourceIterator $resourceIterator
-     * @param \ActiveCampaign\Integration\Model\Sync\Queue\Contact $syncQueue
-     * @param \ActiveCampaign\Integration\Helper\Customer $customerHelper
+     * @param \ActiveCampaign\Integration\Model\Sync\Prepare\Order $syncPrepareOrder
+     * @param \ActiveCampaign\Integration\Helper\Order $orderHelper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Ui\Component\MassAction\Filter $filter,
-        \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $collectionFactory,
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \ActiveCampaign\Integration\Model\ResourceIterator $resourceIterator,
-        \ActiveCampaign\Integration\Model\Sync\Queue\Contact $syncQueue,
-        \ActiveCampaign\Integration\Helper\Customer $customerHelper
+        \ActiveCampaign\Integration\Model\Sync\Prepare\Order $syncPrepareOrder,
+        \ActiveCampaign\Integration\Helper\Order $orderHelper
     ) {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
         $this->resourceIterator = $resourceIterator;
-        $this->syncQueue = $syncQueue;
-        $this->customerHelper = $customerHelper;
+        $this->syncPrepareOrder = $syncPrepareOrder;
+        $this->orderHelper = $orderHelper;
 
         parent::__construct($context);
     }
@@ -72,11 +72,11 @@ class MassSync extends \Magento\Backend\App\Action implements \Magento\Framework
 
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setPath('customer/index');
+        $resultRedirect->setPath('sales/order');
 
-        if (!$this->customerHelper->isActive()) {
+        if ($this->orderHelper->isActive()) {
             $this->messageManager->addNoticeMessage(
-                __('Customer syncing to ActiveCampaign is disabled.')
+                __('Order syncing to ActiveCampaign is disabled.')
             );
 
             return $resultRedirect;
@@ -85,11 +85,11 @@ class MassSync extends \Magento\Backend\App\Action implements \Magento\Framework
         try {
             $iterator = $this->resourceIterator->walk(
                 $collection->getSelect(),
-                [[$this->syncQueue, 'iteratorCallback']]
+                [[$this->syncPrepareOrder, 'iteratorCallback']]
             );
 
             $this->messageManager->addSuccessMessage(__(
-                '%1 of %2 customers were scheduled to be synced to ActiveCampaign.',
+                '%1 of %2 orders were scheduled to be synced to ActiveCampaign.',
                 $iterator->processedCount - $iterator->errorCount,
                 $iterator->processedCount
             ));

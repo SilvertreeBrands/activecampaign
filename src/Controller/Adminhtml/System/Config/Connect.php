@@ -40,28 +40,19 @@ class Connect extends \Magento\Backend\App\Action
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \ActiveCampaign\Integration\Helper\Api $apiHelper
      * @param \ActiveCampaign\Api\Connection $connectionApi
-     * @param \ActiveCampaign\Integration\Model\Customer $acCustomer
-     * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
-     * @param \ActiveCampaign\Integration\Cron\SyncCustomer $cronSyncCustomer
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \ActiveCampaign\Integration\Helper\Api $apiHelper,
-        \ActiveCampaign\Api\Connection $connectionApi,
-        \ActiveCampaign\Integration\Model\Customer $acCustomer,
-        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
-        \ActiveCampaign\Integration\Cron\SyncCustomer $cronSyncCustomer
+        \ActiveCampaign\Api\Connection $connectionApi
     ) {
         $this->resultJsonFactory = $resultJsonFactory;
         $this->storeManager = $storeManager;
         $this->apiHelper = $apiHelper;
         $this->connectionApi = $connectionApi;
         $this->urlBuilder = $context->getUrl();
-        $this->acCustomer = $acCustomer;
-        $this->customerRepository = $customerRepository;
-        $this->cronSyncCustomer = $cronSyncCustomer;
 
         parent::__construct($context);
     }

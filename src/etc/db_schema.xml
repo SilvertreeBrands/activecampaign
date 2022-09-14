@@ -1,21 +1,25 @@
 <?xml version="1.0"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
-    <table name="customer_entity">
-        <column xsi:type="int" name="ac_contact_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Contact ID"/>
-        <column xsi:type="int" name="ac_customer_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Customer ID"/>
-        <column xsi:type="smallint" name="ac_sync_status" nullable="false" unsigned="true" identity="false" default="0" comment="ActiveCampaign Sync Status"/>
-    </table>
-    <table name="quote">
-        <column xsi:type="int" name="ac_sync_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Sync ID"/>
-        <column xsi:type="smallint" name="ac_sync_status" nullable="false" unsigned="true" identity="false" default="0" comment="ActiveCampaign Sync Status"/>
-    </table>
-    <table name="sales_order">
-        <column xsi:type="int" name="ac_sync_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Sync ID"/>
-        <column xsi:type="smallint" name="ac_sync_status" nullable="false" unsigned="true" identity="false" default="0" comment="ActiveCampaign Sync Status"/>
-    </table>
-    <table name="sales_order_grid">
-        <column xsi:type="int" name="ac_sync_id" nullable="true" unsigned="true" identity="false" comment="ActiveCampaign Sync ID"/>
-        <column xsi:type="smallint" name="ac_sync_status" nullable="false" unsigned="true" identity="false" default="0" comment="ActiveCampaign Sync Status"/>
+    <table name="activecampaign_sync" resource="default" engine="innodb">
+        <column xsi:type="bigint" name="sync_id" padding="20" unsigned="true" nullable="false" identity="true" comment="Sync ID"/>
+        <column xsi:type="bigint" name="store_id" padding="20" unsigned="true" nullable="false" identity="false" comment="Store ID"/>
+        <column xsi:type="bigint" name="mage_entity_id" padding="20" unsigned="true" nullable="false" identity="false" comment="Magento Entity ID"/>
+        <column xsi:type="varchar" name="mage_entity_type" nullable="false" length="20" comment="Magento Entity Type"/>
+        <column xsi:type="bigint" name="ac_entity_id" padding="20" unsigned="true" nullable="true" identity="false" default="null" comment="ActiveCampaign Entity ID"/>
+        <column xsi:type="varchar" name="ac_entity_type" nullable="false" length="20" comment="ActiveCampaign Entity Type"/>
+        <column xsi:type="smallint" name="removed" nullable="false" unsigned="true" identity="false" default="0" comment="Removed"/>
+        <column xsi:type="smallint" name="status" nullable="false" unsigned="true" identity="false" default="0" comment="Status"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="sync_id"/>
+        </constraint>
+
+        <index referenceId="IDX_ACTIVECAMPAIGN_SYNC_ENTITY_TYPE" indexType="btree">
+            <column name="mage_entity_type"/>
+            <column name="ac_entity_type"/>
+        </index>
     </table>
 </schema>

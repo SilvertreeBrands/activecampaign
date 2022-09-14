@@ -3,23 +3,21 @@
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <listingToolbar name="listing_top">
         <massaction name="listing_massaction">
-            <action name="order_sync">
-                <argument name="data" xsi:type="array">
-                    <item name="config" xsi:type="array">
-                        <item name="type" xsi:type="string">order_sync</item>
-                        <item name="label" xsi:type="string" translate="true">Sync to ActiveCampaign</item>
-                        <item name="url" xsi:type="url" path="ac_order/order/masssync"/>
-                        <item name="confirm" xsi:type="array">
-                            <item name="title" xsi:type="string" translate="true">Sync Order(s)</item>
-                            <item name="message" xsi:type="string" translate="true">Are you sure you want to sync the selected orders?</item>
-                        </item>
-                    </item>
-                </argument>
+            <action name="ac_sync">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to schedule a sync for the selected orders to ActiveCampaign?</message>
+                        <title translate="true">Sync</title>
+                    </confirm>
+                    <url path="activecampaign/order/massSync"/>
+                    <type>sync</type>
+                    <label translate="true">Schedule Sync to ActiveCampaign</label>
+                </settings>
             </action>
         </massaction>
     </listingToolbar>
     <columns name="sales_order_columns">
-        <column name="ac_sync_status" component="Magento_Ui/js/grid/columns/select">
+        <column name="ac_sync_status" component="Magento_Ui/js/grid/columns/select" sortOrder="10">
             <settings>
                 <options class="ActiveCampaign\Integration\Model\Source\SyncStatus"/>
                 <filter>select</filter>
@@ -28,6 +26,7 @@
                     <editorType>select</editorType>
                 </editor>
                 <label translate="true">ActiveCampaign Sync Status</label>
+                <visible>true</visible>
             </settings>
         </column>
     </columns>

@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="ActiveCampaign\Integration\Api\SyncRepositoryInterface" type="ActiveCampaign\Integration\Model\SyncRepository" />
+    <preference for="ActiveCampaign\Integration\Api\Data\SyncInterface" type="ActiveCampaign\Integration\Model\Sync" />
+    <preference for="ActiveCampaign\Integration\Api\Data\SyncSearchResultInterface" type="Magento\Framework\Api\SearchResults"/>
+
     <type name="ActiveCampaign\Integration\Logger\Handlers\DebugHandler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
@@ -20,12 +24,49 @@
             </argument>
         </arguments>
     </type>
+    <type name="ActiveCampaign\Api\Connection">
+        <arguments>
+            <argument name="logger" xsi:type="object">ActiveCampaign\Integration\Logger\Logger</argument>
+        </arguments>
+    </type>
     <type name="ActiveCampaign\Api\Contacts">
         <arguments>
             <argument name="logger" xsi:type="object">ActiveCampaign\Integration\Logger\Logger</argument>
         </arguments>
     </type>
-    <type name="Magento\Customer\Api\CustomerRepositoryInterface">
-        <plugin name="ac_update_contact" type="ActiveCampaign\Integration\Plugin\Customer\Api\CustomerRepository\UpdateContact"/>
+    <type name="ActiveCampaign\Api\EcomCustomers">
+        <arguments>
+            <argument name="logger" xsi:type="object">ActiveCampaign\Integration\Logger\Logger</argument>
+        </arguments>
     </type>
+    <type name="ActiveCampaign\Api\EcomOrders">
+        <arguments>
+            <argument name="logger" xsi:type="object">ActiveCampaign\Integration\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\EntityManager\MetadataPool">
+        <arguments>
+            <argument name="metadata" xsi:type="array">
+                <item name="ActiveCampaign\Integration\Api\Data\SyncInterface" xsi:type="array">
+                    <item name="entityTableName" xsi:type="string">activecampaign_sync</item>
+                    <item name="identifierField" xsi:type="string">sync_id</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="ActiveCampaign\Integration\Api\SyncRepositoryInterface">
+        <plugin name="ac_sync_repository" type="ActiveCampaign\Integration\Plugin\SyncRepositoryPlugin"/>
+    </type>
+    <type name="Magento\Customer\Api\CustomerRepositoryInterface">
+        <plugin name="ac_customer_repository" type="ActiveCampaign\Integration\Plugin\CustomerRepositoryPlugin"/>
+    </type>
+
+    <!--<type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="ac_extension_attributes" type="ActiveCampaign\Integration\Plugin\Sales\OrderRepositoryPlugin"/>
+    </type>
+    <type name="Magento\Sales\Model\ResourceModel\Order\Grid\Collection">
+        <plugin name="ac_extension_attributes" type="ActiveCampaign\Integration\Plugin\Sales\OrderGridPlugin" />
+    </type>-->
 </config>

@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace ActiveCampaign\Integration\Model\Source;
 
-class SyncStatus extends \Magento\Eav\Model\Entity\Attribute\Source\Table
+class AcEntityType extends \Magento\Eav\Model\Entity\Attribute\Source\Table
 {
     /**#@+
-     * Statuses
+     * Entity types
      */
-    public const PENDING = 0;
-    public const COMPLETE = 1;
-    public const FAILED = 2;
+    public const CONTACT = 'Contact';
+    public const ECOM_CUSTOMER = 'EcomCustomer';
+    public const ECOM_ORDER = 'EcomOrder';
 
     /**
      * @inheritdoc
@@ -22,23 +22,23 @@ class SyncStatus extends \Magento\Eav\Model\Entity\Attribute\Source\Table
         if (!$this->_options) {
             $this->_options = [
                 [
-                    'value' => self::PENDING,
-                    'label' => 'Pending'
+                    'value' => self::CONTACT,
+                    'label' => self::CONTACT
                 ],
                 [
-                    'value' => self::COMPLETE,
-                    'label' => 'Complete'
+                    'value' => self::ECOM_CUSTOMER,
+                    'label' => self::ECOM_CUSTOMER
                 ],
                 [
-                    'value' => self::FAILED,
-                    'label' => 'Failed'
+                    'value' => self::ECOM_ORDER,
+                    'label' => self::ECOM_ORDER
                 ]
             ];
 
             if ($withEmpty) {
                 array_unshift($this->_options, [
                     'value' => '',
-                    'label' => __('--- Select Sync Status ---')
+                    'label' => __('--- Select ActiveCampaign Entity Type ---')
                 ]);
             }
         }

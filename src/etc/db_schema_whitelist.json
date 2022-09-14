@@ -1,27 +1,22 @@
 {
-    "customer_entity": {
+    "activecampaign_sync": {
         "column": {
-            "ac_contact_id": true,
-            "ac_customer_id": true,
-            "ac_sync_status": true
-        }
-    },
-    "quote": {
-        "column": {
-            "ac_sync_id": true,
-            "ac_sync_status": true
-        }
-    },
-    "sales_order": {
-        "column": {
-            "ac_sync_id": true,
-            "ac_sync_status": true
-        }
-    },
-    "sales_order_grid": {
-        "column": {
-            "ac_sync_id": true,
-            "ac_sync_status": true
+            "sync_id": true,
+            "store_id": true,
+            "mage_entity_id": true,
+            "mage_entity_type": true,
+            "ac_entity_id": true,
+            "ac_entity_type": true,
+            "removed": true,
+            "status": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "IDX_ACTIVECAMPAIGN_SYNC_ENTITY_TYPE": true
+        },
+        "constraint": {
+            "PRIMARY": true
         }
     }
 }

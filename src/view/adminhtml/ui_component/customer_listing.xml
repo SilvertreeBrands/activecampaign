@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <listingToolbar name="listing_top">
-        <massaction name="listing_massaction" component="Magento_Ui/js/grid/tree-massactions">
+        <massaction name="listing_massaction">
             <action name="ac_sync">
                 <settings>
                     <confirm>
-                        <message translate="true">Are you sure you want to sync the selected customers to ActiveCampaign?</message>
+                        <message translate="true">Are you sure you want to schedule a sync for the selected customers to ActiveCampaign?</message>
                         <title translate="true">Sync</title>
                     </confirm>
                     <url path="activecampaign/customer/massSync"/>
                     <type>sync</type>
-                    <label translate="true">Sync to ActiveCampaign</label>
+                    <label translate="true">Schedule Sync to ActiveCampaign</label>
                 </settings>
             </action>
         </massaction>
