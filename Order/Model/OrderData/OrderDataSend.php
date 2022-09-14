@@ -171,14 +171,7 @@ class OrderDataSend extends \Magento\Framework\Model\AbstractModel
         $result = [];
 
         try {
-            $t = $this->contacts
-                ->setConfig(
-                    $this->apiHelper->getApiKey($order->getStoreId()),
-                    $this->apiHelper->getApiUrl($order->getStoreId()),
-                    $this->apiHelper->isDebugActive($order->getStoreId()),
-                )
-                ->sync('shaughn@shaughn.pro', 'bob', 'the builder', '0215571234')
-            ;
+
 
             $connectionId = $this->activeCampaignHelper->getConnectionId($order->getStoreId());
             $customerId = $order->getCustomerId();
