@@ -17,7 +17,16 @@
         </massaction>
     </listingToolbar>
     <columns name="customer_columns">
-        <column name="ac_sync_status" component="Magento_Ui/js/grid/columns/select" sortOrder="300">
+        <column name="ac_contact_id" sortOrder="300">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">ActiveCampaign Contact ID</label>
+                <visible>false</visible>
+            </settings>
+        </column>
+        <column name="ac_contact_sync_status"
+                component="Magento_Ui/js/grid/columns/select"
+                sortOrder="301">
             <settings>
                 <options class="ActiveCampaign\Integration\Model\Source\SyncStatus"/>
                 <filter>select</filter>
@@ -25,7 +34,7 @@
                 <editor>
                     <editorType>select</editorType>
                 </editor>
-                <label translate="true">ActiveCampaign Sync Status</label>
+                <label translate="true">ActiveCampaign Contact Sync Status</label>
                 <visible>true</visible>
             </settings>
         </column>

@@ -62,6 +62,9 @@
     <type name="Magento\Customer\Api\CustomerRepositoryInterface">
         <plugin name="ac_customer_repository" type="ActiveCampaign\Integration\Plugin\CustomerRepositoryPlugin"/>
     </type>
+    <type name="Magento\Customer\Model\ResourceModel\Grid\Collection">
+        <plugin name="ac_customer_grid" type="ActiveCampaign\Integration\Plugin\CustomerGridPlugin" />
+    </type>
 
     <!--<type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="ac_extension_attributes" type="ActiveCampaign\Integration\Plugin\Sales\OrderRepositoryPlugin"/>

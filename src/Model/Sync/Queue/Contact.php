@@ -62,15 +62,23 @@ class Contact extends AbstractQueue
             $sync = $this->syncModelFactory->create();
         }
 
-        $sync
-            ->setStoreId($storeId)
-            ->setMageEntityId($entityId)
-            ->setMageEntityType(\ActiveCampaign\Integration\Model\Source\MageEntityType::CUSTOMER)
-            ->setAcEntityType(\ActiveCampaign\Integration\Model\Source\AcEntityType::CONTACT)
-            ->setStatus(\ActiveCampaign\Integration\Model\Source\SyncStatus::PENDING)
-            ->setRemoved($remove)
-        ;
+        // If not synced to AC, then just remove the entry
+        if ($remove
+            && $sync->getId()
+            && !$sync->getAcEntityId()
+        ) {
+            $this->syncRepository->delete($sync);
+        } else {
+            $sync
+                ->setStoreId($storeId)
+                ->setMageEntityId($entityId)
+                ->setMageEntityType(\ActiveCampaign\Integration\Model\Source\MageEntityType::CUSTOMER)
+                ->setAcEntityType(\ActiveCampaign\Integration\Model\Source\AcEntityType::CONTACT)
+                ->setStatus(\ActiveCampaign\Integration\Model\Source\SyncStatus::PENDING)
+                ->setRemoved($remove)
+            ;
 
-        $this->syncRepository->save($sync);
+            $this->syncRepository->save($sync);
+        }
     }
 }
