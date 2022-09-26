@@ -74,7 +74,8 @@ class EcomCustomers extends \ActiveCampaign\Gateway\Client
             'ecomCustomers/' . $ecomCustomerId,
             self::METHOD_PUT,
             $payload,
-            [200, 201]
+            [200, 201],
+            [404]
         );
     }
 

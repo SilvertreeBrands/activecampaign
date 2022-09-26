@@ -112,6 +112,7 @@ class EcomCustomer extends AbstractProcessor
         }
 
         try {
+            // @Todo cater for deletion
             $customer = $this->customerRepository->getById($sync->getMageEntityId());
 
             /** @var \ActiveCampaign\Api\Models\EcomCustomer $ecomCustomer */
@@ -129,22 +130,13 @@ class EcomCustomer extends AbstractProcessor
             );
 
             if ($sync->getAcEntityId()) {
-                $ecomCustomerResponse = $this->ecomCustomersApi->update(
-                    $sync->getAcEntityId(),
-                    $ecomCustomer
-                );
+                $acEntityId = $this->updateEcomCustomer($ecomCustomer, $sync->getAcEntityId());
             } else {
-                $ecomCustomerResponse = $this->ecomCustomersApi->create($ecomCustomer);
-            }
-
-            if (empty($ecomCustomerResponse->result['ecomCustomer']['id'])) {
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    __('Unable to retrieve ecomCustomer ID from result')
-                );
+                $acEntityId = $this->createEcomCustomer($ecomCustomer);
             }
 
             $sync
-                ->setAcEntityId((int)$ecomCustomerResponse->result['ecomCustomer']['id'])
+                ->setAcEntityId($acEntityId)
                 ->setStatus(\ActiveCampaign\Integration\Model\Source\SyncStatus::COMPLETE)
             ;
 
@@ -158,5 +150,74 @@ class EcomCustomer extends AbstractProcessor
 
             throw $e;
         }
+    }
+
+    /**
+     * Update ecom customer
+     *
+     * @param \ActiveCampaign\Api\Models\EcomCustomer $ecomCustomer
+     * @param int $acEntityId
+     *
+     * @return int
+     * @throws \ActiveCampaign\Gateway\ResultException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function updateEcomCustomer(
+        \ActiveCampaign\Api\Models\EcomCustomer $ecomCustomer,
+        int $acEntityId
+    ) {
+        $response = $this->ecomCustomersApi->update(
+            $acEntityId,
+            $ecomCustomer
+        );
+
+        if ($response->status === 404) {
+            return $this->createEcomCustomer($ecomCustomer);
+        }
+
+        if (empty($response->result['ecomCustomer']['id'])) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('Unable to retrieve ecomCustomer ID from result')
+            );
+        }
+
+        return (int)$response->result['ecomCustomer']['id'];
+    }
+
+    /**
+     * Create ecom customer
+     *
+     * First checks if the ecom customer exists, else it will create.
+     *
+     * @param \ActiveCampaign\Api\Models\EcomCustomer $ecomCustomer
+     *
+     * @return int
+     * @throws \ActiveCampaign\Gateway\ResultException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function createEcomCustomer(
+        \ActiveCampaign\Api\Models\EcomCustomer $ecomCustomer
+    ) {
+        // Search for ecom customer
+        $searchResponse = $this->ecomCustomersApi->list([
+            'filters[email]'        => urlencode($ecomCustomer->getEmail()),
+            'filters[externalid]'   => $ecomCustomer->getExternalId(),
+            'filters[connectionid]' => $ecomCustomer->getConnectionId()
+        ]);
+
+        if (!empty($searchResponse->result['ecomCustomers'][0]['id'])) {
+            return (int)$searchResponse->result['ecomCustomers'][0]['id'];
+        }
+
+        // Create ecom customer
+        $response = $this->ecomCustomersApi->create($ecomCustomer);
+
+        if (empty($response->result['ecomCustomer']['id'])) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('Unable to retrieve ecomCustomer ID from result')
+            );
+        }
+
+        return (int)$response->result['ecomCustomer']['id'];
     }
 }

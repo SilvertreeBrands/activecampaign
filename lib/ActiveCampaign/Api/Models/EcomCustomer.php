@@ -39,6 +39,16 @@ class EcomCustomer extends \ActiveCampaign\Api\Models\AbstractModel
     }
 
     /**
+     * Get connection ID
+     *
+     * @return string
+     */
+    public function getConnectionId(): string
+    {
+        return $this->connectionid;
+    }
+
+    /**
      * Set external ID
      *
      * @param string $externalId
@@ -49,6 +59,16 @@ class EcomCustomer extends \ActiveCampaign\Api\Models\AbstractModel
     {
         $this->externalid = $externalId;
         return $this;
+    }
+
+    /**
+     * Get external ID
+     *
+     * @return string
+     */
+    public function getExternalId(): string
+    {
+        return $this->externalid;
     }
 
     /**
@@ -65,6 +85,16 @@ class EcomCustomer extends \ActiveCampaign\Api\Models\AbstractModel
     }
 
     /**
+     * Get email
+     *
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
      * Set accepts marketing
      *
      * @param string $acceptsMarketing
@@ -75,5 +105,15 @@ class EcomCustomer extends \ActiveCampaign\Api\Models\AbstractModel
     {
         $this->acceptsMarketing = $acceptsMarketing;
         return $this;
+    }
+
+    /**
+     * Get accepts marketing
+     *
+     * @return string
+     */
+    public function getAcceptsMarketing(): string
+    {
+        return $this->acceptsMarketing;
     }
 }

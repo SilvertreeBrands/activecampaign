@@ -147,6 +147,7 @@ class Contact extends AbstractProcessor
                         ->create()
                 )->getItems();
 
+                // @Todo cater for deletion on ecom customers
                 foreach ($syncCollection as $sync) {
                     $this->syncRepository->delete($sync);
                 }

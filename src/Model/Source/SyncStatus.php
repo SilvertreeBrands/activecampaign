@@ -22,6 +22,10 @@ class SyncStatus extends \Magento\Eav\Model\Entity\Attribute\Source\Table
         if (!$this->_options) {
             $this->_options = [
                 [
+                    'value' => null,
+                    'label' => 'na'
+                ],
+                [
                     'value' => self::PENDING,
                     'label' => 'Pending'
                 ],

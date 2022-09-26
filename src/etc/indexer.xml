@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
+    <indexer id="customer_grid">
+        <fieldset name="ac_sync_contact" source="ActiveCampaign\Integration\Model\ResourceModel\Sync\Collection"
+                  provider="ActiveCampaign\Integration\Model\Indexer\Customer\ContactProvider">
+            <!-- Reference join overwritten in provider -->
+            <reference fieldset="customer" from="mage_entity_id" to="entity_id"/>
+            <field name="status" xsi:type="filterable" dataType="int"/>
+            <field name="ac_entity_id" xsi:type="filterable" dataType="int"/>
+        </fieldset>
+        <fieldset name="ac_sync_ecom_customer" source="ActiveCampaign\Integration\Model\ResourceModel\Sync\Collection"
+                  provider="ActiveCampaign\Integration\Model\Indexer\Customer\EcomCustomerProvider">
+            <!-- Reference join overwritten in provider -->
+            <reference fieldset="customer" from="mage_entity_id" to="entity_id"/>
+            <field name="status" xsi:type="filterable" dataType="int"/>
+            <field name="ac_entity_id" xsi:type="filterable" dataType="int"/>
+        </fieldset>
+    </indexer>
+</config>

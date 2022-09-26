@@ -39,6 +39,11 @@ class SyncRepository implements \ActiveCampaign\Integration\Api\SyncRepositoryIn
     private $searchResultInterfaceFactory;
 
     /**
+     * @var \Magento\Framework\Indexer\IndexerRegistry
+     */
+    protected $indexerRegistry;
+
+    /**
      * @var \Magento\Framework\EntityManager\HydratorInterface
      */
     private $hydrator;
@@ -52,6 +57,7 @@ class SyncRepository implements \ActiveCampaign\Integration\Api\SyncRepositoryIn
      * @param \Magento\Framework\Api\Search\SearchCriteriaBuilder $searchCriteriaBuilder
      * @param \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor
      * @param \ActiveCampaign\Integration\Api\Data\SyncSearchResultInterfaceFactory $searchResultInterfaceFactory
+     * @param \Magento\Framework\Indexer\IndexerRegistry $indexerRegistry
      * @param \Magento\Framework\EntityManager\HydratorInterface|null $hydrator
      */
     public function __construct(
@@ -61,6 +67,7 @@ class SyncRepository implements \ActiveCampaign\Integration\Api\SyncRepositoryIn
         \Magento\Framework\Api\Search\SearchCriteriaBuilder $searchCriteriaBuilder,
         \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor,
         \ActiveCampaign\Integration\Api\Data\SyncSearchResultInterfaceFactory $searchResultInterfaceFactory,
+        \Magento\Framework\Indexer\IndexerRegistry $indexerRegistry,
         ?\Magento\Framework\EntityManager\HydratorInterface $hydrator = null
     ) {
         $this->modelResource = $modelResource;
@@ -69,6 +76,7 @@ class SyncRepository implements \ActiveCampaign\Integration\Api\SyncRepositoryIn
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->collectionProcessor = $collectionProcessor;
         $this->searchResultInterfaceFactory = $searchResultInterfaceFactory;
+        $this->indexerRegistry = $indexerRegistry;
         $this->hydrator = $hydrator ?? \Magento\Framework\App\ObjectManager::getInstance()
                 ->get(\Magento\Framework\EntityManager\HydratorInterface::class);
     }
@@ -93,6 +101,13 @@ class SyncRepository implements \ActiveCampaign\Integration\Api\SyncRepositoryIn
             $this->modelResource->save($model);
         } catch (\Exception $exception) {
             throw new \Magento\Framework\Exception\CouldNotSaveException(__($exception->getMessage()));
+        }
+
+        if ($model->getMageEntityType() === \ActiveCampaign\Integration\Model\Source\MageEntityType::CUSTOMER) {
+            $this->reindexMageEntity(
+                \Magento\Customer\Model\Customer::CUSTOMER_GRID_INDEXER_ID,
+                $model->getMageEntityId()
+            );
         }
 
         return $model;
@@ -182,5 +197,24 @@ class SyncRepository implements \ActiveCampaign\Integration\Api\SyncRepositoryIn
         }
 
         return true;
+    }
+
+    /**
+     * Reindex Magento entity
+     *
+     * This ensures grids are always updated.
+     *
+     * @param string $indexerId
+     * @param int $entityId
+     *
+     * @return void
+     */
+    private function reindexMageEntity(string $indexerId, int $entityId): void
+    {
+        $indexer = $this->indexerRegistry->get($indexerId);
+
+        if ($indexer->getState()->getStatus() == \Magento\Framework\Indexer\StateInterface::STATUS_VALID) {
+            $indexer->reindexRow($entityId);
+        }
     }
 }

@@ -81,6 +81,7 @@ class Client
      * @param string $method
      * @param array $payload
      * @param array $successCodes
+     * @param array $errorCodes
      *
      * @return \ActiveCampaign\Gateway\Response
      * @throws ResultException
@@ -89,7 +90,8 @@ class Client
         string $action,
         string $method,
         array $payload = [],
-        array $successCodes = []
+        array $successCodes = [],
+        array $errorCodes = []
     ) {
         try {
             if (!$this->apiKey) {
@@ -131,7 +133,7 @@ class Client
             $rawResponse = $ge;
         }
 
-        $response = new \ActiveCampaign\Gateway\Response($rawResponse, $successCodes);
+        $response = new \ActiveCampaign\Gateway\Response($rawResponse, $successCodes, $errorCodes);
 
         $this->debug('Response result', $response->result);
 

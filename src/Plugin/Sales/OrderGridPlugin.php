@@ -22,7 +22,7 @@ class OrderGridPlugin
             $subject->getSelect()->joinLeft(
                 $tableName,
                 sprintf(
-                    '%1$s.entity_type = \'%2$s\' AND %1$s.mage_entity_id = main_table.%3$s',
+                    '%1$s.ac_entity_type = \'%2$s\' AND %1$s.mage_entity_id = main_table.%3$s',
                     $tableName,
                     \ActiveCampaign\Integration\Model\Source\AcEntityType::ECOM_ORDER,
                     $primaryKey

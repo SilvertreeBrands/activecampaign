@@ -5,14 +5,8 @@
     <extension_attributes for="Magento\Customer\Api\Data\CustomerInterface">
         <attribute code="ac_syncs" type="ActiveCampaign\Integration\Api\Data\SyncInterface[]" />
     </extension_attributes>
-    <!--<extension_attributes for="Magento\Customer\Api\Data\CustomerInterface">
-        <attribute code="ac_contact_sync_status" type="ActiveCampaign\Integration\Api\Data\SyncInterface[]">
-            <join reference_table="activecampaign_sync" reference_field="mage_entity_id" join_on_field="entity_id">
-                <field>status</field>
-            </join>
-        </attribute>
-    </extension_attributes>-->
-    <!--<extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
+    <!-- above can be removed -->
+   <!-- <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
         <attribute code="ac_sync" type="ActiveCampaign\Integration\Api\Data\SyncInterface" />
     </extension_attributes>
     <extension_attributes for="Magento\Quote\Api\Data\CartInterface">

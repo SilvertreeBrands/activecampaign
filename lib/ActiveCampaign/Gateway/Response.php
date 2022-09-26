@@ -16,6 +16,11 @@ class Response
     private $successCodes;
 
     /**
+     * @var array
+     */
+    private $errorCodes;
+
+    /**
      * @var int|null
      */
     public $status;
@@ -33,17 +38,20 @@ class Response
     /**
      * Construct
      *
-     * @param \Psr\Http\Message\ResponseInterface|\Exception $response
+     * @param \Psr\Http\Message\ResponseInterface|\GuzzleHttp\Exception\ClientException|\Exception $response
      * @param array $successCodes
+     * @param array $errorCodes
      *
      * @throws \ActiveCampaign\Gateway\ResultException
      */
     public function __construct(
-        \Psr\Http\Message\ResponseInterface|\Exception $response,
-        array $successCodes = []
+        \Psr\Http\Message\ResponseInterface|\GuzzleHttp\Exception\ClientException|\Exception $response,
+        array $successCodes = [],
+        array $errorCodes = []
     ) {
         $this->response = $response;
         $this->successCodes = $successCodes;
+        $this->errorCodes = $errorCodes;
         $this->parseResponse();
     }
 
@@ -62,10 +70,16 @@ class Response
                 $this->status = $this->response->getStatusCode();
                 $this->rawResult = $this->response->getBody()->getContents();
                 $this->result = $this->unserialize($this->rawResult);
+            } elseif ($this->response instanceof \GuzzleHttp\Exception\ClientException) {
+                $this->status = $this->response->getCode();
+                $this->rawResult = $this->response->getMessage();
+                $this->result = [$this->rawResult];
+            }
 
-                if (in_array($this->response->getStatusCode(), $this->successCodes)) {
-                    $success = true;
-                }
+            if (in_array($this->status, $this->successCodes)
+                || in_array($this->status, $this->errorCodes)
+            ) {
+                $success = true;
             }
         } catch (\Exception $e) {
             throw new \ActiveCampaign\Gateway\ResultException($e->getMessage());
